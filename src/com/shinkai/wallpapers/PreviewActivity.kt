@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class PreviewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,21 +56,72 @@ class PreviewActivity : AppCompatActivity() {
             }
 
             dialog.dismiss()
-            setWallpaper(path, flag)
+            setWallpaperWithLoading(path, flag)
         }
 
         dialog.show()
     }
 
-    private fun setWallpaper(path: String, flag: Int) {
+    private fun setWallpaperWithLoading(path: String, flag: Int) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_loading, null)
+        
+        val loadingDialog = MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        loadingDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        loadingDialog.show()
+
         Thread {
             try {
-                val bmp = assets.open(path).use { BitmapFactory.decodeStream(it) }
-                WallpaperManager.getInstance(this).setBitmap(bmp, null, true, flag)
-                runOnUiThread { Toast.makeText(this, "Set berhasil", Toast.LENGTH_SHORT).show(); finish() }
+
+                val displayMetrics = resources.displayMetrics
+                val targetWidth = displayMetrics.widthPixels
+                val targetHeight = displayMetrics.heightPixels
+
+                val options = BitmapFactory.Options().apply {
+                    inJustDecodeBounds = true
+                }
+                assets.open(path).use { BitmapFactory.decodeStream(it, null, options) }
+
+                options.inSampleSize = calculateInSampleSize(options, targetWidth, targetHeight)
+                options.inJustDecodeBounds = false
+                options.inPreferredConfig = android.graphics.Bitmap.Config.ARGB_8888 
+
+                val optimizedBmp = assets.open(path).use { BitmapFactory.decodeStream(it, null, options) }
+
+                if (optimizedBmp != null) {
+                    WallpaperManager.getInstance(this).setBitmap(optimizedBmp, null, true, flag)
+                    optimizedBmp.recycle() 
+                }
+                
+                runOnUiThread {
+                    loadingDialog.dismiss()
+                    Toast.makeText(this, "Wallpaper berhasil disetel", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
             } catch (e: Exception) {
-                runOnUiThread { Toast.makeText(this, "Gagal: ${e.message}", Toast.LENGTH_SHORT).show() }
+                runOnUiThread {
+                    loadingDialog.dismiss()
+                    Toast.makeText(this, "Gagal: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }.start()
+    }
+
+    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+        val (height: Int, width: Int) = options.outHeight to options.outWidth
+        var inSampleSize = 1
+
+        if (height > reqHeight || width > reqWidth) {
+            val halfHeight: Int = height / 2
+            val halfWidth: Int = width / 2
+
+            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+        return inSampleSize
     }
 }
