@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import android.widget.TextView
 
 class PreviewActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,7 +15,10 @@ class PreviewActivity : Activity() {
         setContentView(R.layout.activity_preview)
 
         val path = intent.getStringExtra("asset_path") ?: return finish()
+        val name = intent.getStringExtra("wallpaper_name") ?: ""
+
         findViewById<ImageView>(R.id.preview_image).setImageBitmap(BitmapFactory.decodeStream(assets.open(path)))
+        findViewById<TextView>(R.id.preview_title).text = name
 
         findViewById<Button>(R.id.btn_set_home).setOnClickListener { setWallpaper(path, WallpaperManager.FLAG_SYSTEM) }
         findViewById<Button>(R.id.btn_set_lock).setOnClickListener { setWallpaper(path, WallpaperManager.FLAG_LOCK) }
