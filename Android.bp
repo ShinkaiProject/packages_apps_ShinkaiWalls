@@ -7,7 +7,11 @@ android_app {
     platform_apis: true,
     system_ext_specific: true,
     certificate: "platform",
-    static_libs: ["androidx.recyclerview_recyclerview"],
+    static_libs: [
+        "androidx.recyclerview_recyclerview",
+        "androidx.appcompat_appcompat",
+        "com.google.android.material_material"
+    ],
     optimize: {
         enabled: false,
     },

@@ -14,8 +14,9 @@ class WallpaperAdapter(
 ) : RecyclerView.Adapter<WallpaperAdapter.VH>() {
 
     class VH(view: View) : RecyclerView.ViewHolder(view) {
-        val image: ImageView = view.findViewById(R.id.thumb)
-        val label: TextView = view.findViewById(R.id.label)
+
+        val image: ImageView = view.findViewById(R.id.wallpaper_image)
+        val label: TextView = view.findViewById(R.id.wallpaper_title)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {

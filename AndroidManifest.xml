@@ -7,12 +7,12 @@
 
     <application
         android:label="@string/app_name"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_launcher"
         android:allowBackup="false">
 
         <activity android:name=".MainActivity"
             android:exported="true"
-            android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+            android:theme="@style/Theme.ShinkaiWallpapers">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -21,6 +21,7 @@
 
         <activity android:name=".PreviewActivity"
             android:exported="false"
-            android:theme="@android:style/Theme.DeviceDefault.NoActionBar" />
+            android:theme="@style/Theme.ShinkaiWallpapers" />
     </application>
+
 </manifest>

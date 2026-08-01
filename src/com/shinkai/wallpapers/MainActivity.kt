@@ -1,14 +1,18 @@
 package com.shinkai.wallpapers
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.DynamicColors
 import org.json.JSONArray
 
-class MainActivity : Activity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        DynamicColors.applyToActivityIfAvailable(this)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
