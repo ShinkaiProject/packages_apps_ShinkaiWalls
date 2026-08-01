@@ -1,5 +1,5 @@
 android_app {
-    name: "ShinkaiWallpapers",
+    name: "ShinkaiWalls",
     srcs: ["src/**/*.kt"],
     resource_dirs: ["res"],
     asset_dirs: ["assets"],
