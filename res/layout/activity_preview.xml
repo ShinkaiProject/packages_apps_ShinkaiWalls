@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/preview_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="#66000000">
+        <Button android:id="@+id/btn_set_home" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Home" />
+        <Button android:id="@+id/btn_set_lock" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Lock" />
+        <Button android:id="@+id/btn_set_both" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Both" />
+    </LinearLayout>
+</FrameLayout>
