@@ -3,32 +3,62 @@ package com.shinkai.wallpapers
 import android.app.WallpaperManager
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.widget.Button
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.Toast
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.DynamicColors
 
 class PreviewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-
         DynamicColors.applyToActivityIfAvailable(this)
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_preview)
 
         val path = intent.getStringExtra("asset_path") ?: return finish()
-        val name = intent.getStringExtra("wallpaper_name") ?: ""
 
         findViewById<ImageView>(R.id.preview_image).setImageBitmap(BitmapFactory.decodeStream(assets.open(path)))
-        findViewById<TextView>(R.id.preview_title).text = name
 
-        findViewById<Button>(R.id.btn_set_home).setOnClickListener { setWallpaper(path, WallpaperManager.FLAG_SYSTEM) }
-        findViewById<Button>(R.id.btn_set_lock).setOnClickListener { setWallpaper(path, WallpaperManager.FLAG_LOCK) }
-        findViewById<Button>(R.id.btn_set_both).setOnClickListener {
-            setWallpaper(path, WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK)
+        findViewById<android.view.View>(R.id.btn_back).setOnClickListener {
+            finish()
         }
+
+        findViewById<MaterialButton>(R.id.btn_berikutnya).setOnClickListener {
+            showApplyBottomSheet(path)
+        }
+    }
+
+    private fun showApplyBottomSheet(path: String) {
+        val dialog = BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.bottom_sheet_apply, null)
+        dialog.setContentView(view)
+
+        val cbLock = view.findViewById<CheckBox>(R.id.cb_lockscreen)
+        val cbHome = view.findViewById<CheckBox>(R.id.cb_homescreen)
+        val btnTerapkan = view.findViewById<MaterialButton>(R.id.btn_terapkan)
+        val btnBatal = view.findViewById<MaterialButton>(R.id.btn_batal)
+
+        btnBatal.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnTerapkan.setOnClickListener {
+            var flag = 0
+            if (cbLock.isChecked) flag = flag or WallpaperManager.FLAG_LOCK
+            if (cbHome.isChecked) flag = flag or WallpaperManager.FLAG_SYSTEM
+
+            if (flag == 0) {
+                Toast.makeText(this, "Pilih minimal satu layar king!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            dialog.dismiss()
+            setWallpaper(path, flag)
+        }
+
+        dialog.show()
     }
 
     private fun setWallpaper(path: String, flag: Int) {
