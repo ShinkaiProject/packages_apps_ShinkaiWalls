@@ -8,18 +8,62 @@
     android:background="?attr/colorSurface"
     android:paddingHorizontal="12dp">
 
-    <!-- Shinkai Walls  -->
-    <TextView
+    <!-- Shinkai Walls -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
         android:layout_marginBottom="16dp"
+        android:layout_marginStart="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="Shinkai Walls"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-black" />
+
+        <ImageButton
+            android:id="@+id/btn_about"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_round_back_button"
+            android:src="@android:drawable/ic_dialog_info"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            app:tint="?attr/colorOnSurface" />
+    </RelativeLayout>
+
+    <!-- Search Bar -->
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginBottom="16dp"
         android:layout_marginStart="8dp"
-        android:text="Shinkai Walls"
-        android:textColor="?attr/colorOnSurface"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:fontFamily="sans-serif-black" />
+        android:layout_marginEnd="8dp"
+        app:startIconDrawable="@android:drawable/ic_menu_search"
+        app:boxCornerRadiusTopStart="24dp"
+        app:boxCornerRadiusTopEnd="24dp"
+        app:boxCornerRadiusBottomStart="24dp"
+        app:boxCornerRadiusBottomEnd="24dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingVertical="0dp"
+            android:hint="Cari wallpaper pack..."
+            android:inputType="text"
+            android:maxLines="1"
+            android:textSize="14sp"
+            android:textColor="?attr/colorOnSurface" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Wallpaper Grid  -->
     <androidx.recyclerview.widget.RecyclerView
