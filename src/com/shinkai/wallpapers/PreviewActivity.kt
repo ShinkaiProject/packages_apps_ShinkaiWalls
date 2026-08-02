@@ -26,7 +26,7 @@ class PreviewActivity : AppCompatActivity() {
             finish()
         }
 
-        findViewById<MaterialButton>(R.id.btn_berikutnya).setOnClickListener {
+        findViewById<MaterialButton>(R.id.btn_next).setOnClickListener {
             showApplyBottomSheet(path)
         }
     }
@@ -38,20 +38,20 @@ class PreviewActivity : AppCompatActivity() {
 
         val cbLock = view.findViewById<CheckBox>(R.id.cb_lockscreen)
         val cbHome = view.findViewById<CheckBox>(R.id.cb_homescreen)
-        val btnTerapkan = view.findViewById<MaterialButton>(R.id.btn_terapkan)
-        val btnBatal = view.findViewById<MaterialButton>(R.id.btn_batal)
+        val btnApply = view.findViewById<MaterialButton>(R.id.btn_apply)
+        val btnCancel = view.findViewById<MaterialButton>(R.id.btn_cancel)
 
-        btnBatal.setOnClickListener {
+        btnCancel.setOnClickListener {
             dialog.dismiss()
         }
 
-        btnTerapkan.setOnClickListener {
+        btnApply.setOnClickListener {
             var flag = 0
             if (cbLock.isChecked) flag = flag or WallpaperManager.FLAG_LOCK
             if (cbHome.isChecked) flag = flag or WallpaperManager.FLAG_SYSTEM
 
             if (flag == 0) {
-                Toast.makeText(this, "Pilih minimal satu layar king!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "select at least 1 screen!!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -98,13 +98,13 @@ class PreviewActivity : AppCompatActivity() {
                 
                 runOnUiThread {
                     loadingDialog.dismiss()
-                    Toast.makeText(this, "Wallpaper berhasil disetel", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Wallpaper successfully installed.", Toast.LENGTH_SHORT).show()
                     finish()
                 }
             } catch (e: Exception) {
                 runOnUiThread {
                     loadingDialog.dismiss()
-                    Toast.makeText(this, "Gagal: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Failed: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }.start()

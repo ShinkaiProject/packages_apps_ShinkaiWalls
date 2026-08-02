@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
-        android:text="Terapkan wallpaper?"
+        android:text="Apply wallpaper?"
         android:textAlignment="center"
         android:textColor="?attr/colorOnSurface"
         android:textSize="24sp" />
@@ -28,7 +28,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Layar kunci"
+            android:text="Lock Screen"
             android:checked="true"/>
 
         <CheckBox
@@ -36,24 +36,24 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Layar utama"
+            android:text="Home Screen"
             android:checked="true"/>
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_terapkan"
+        android:id="@+id/btn_apply"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="Terapkan"
+        android:text="Apply"
         app:cornerRadius="28dp" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_batal"
+        android:id="@+id/btn_cancel"
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginTop="8dp"
-        android:text="Batal"
+        android:text="Cancel"
         app:cornerRadius="28dp" />
 
 </LinearLayout>

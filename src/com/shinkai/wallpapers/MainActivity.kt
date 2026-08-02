@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<ImageButton>(R.id.btn_about).setOnClickListener {
             MaterialAlertDialogBuilder(this)
-                .setTitle("Tentang App")
+                .setTitle("About App")
                 .setIcon(R.drawable.ic_launcher) 
                 .setMessage("Shinkai Walls\n\nDeveloper: Mnskkyy\nDesainer: SheMyWifee\n\nVersion 1.0")
                 .setPositiveButton("Gasss", null)

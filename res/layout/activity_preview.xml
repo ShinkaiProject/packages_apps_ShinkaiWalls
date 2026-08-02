@@ -36,18 +36,18 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="16dp"
                 android:layout_toEndOf="@id/btn_back"
-                android:text="Pratinjau"
+                android:text="Preview"
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_berikutnya"
+                android:id="@+id/btn_next"
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:text="Berikutnya" />
+                android:text="Next" />
         </RelativeLayout>
     </com.google.android.material.appbar.AppBarLayout>
 

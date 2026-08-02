@@ -58,7 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingVertical="0dp"
-            android:hint="Cari wallpaper pack..."
+            android:hint="search wallpaper pack..."
             android:inputType="text"
             android:maxLines="1"
             android:textSize="14sp"
