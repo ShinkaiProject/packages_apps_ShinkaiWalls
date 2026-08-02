@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btn_about).setOnClickListener {
             MaterialAlertDialogBuilder(this)
                 .setTitle("About App")
-                .setIcon(R.drawable.ic_launcher) 
+                .setIcon(R.mipmap.ic_launcher) 
                 .setMessage("Shinkai Walls\n\nDeveloper: Mnskkyy\nDesainer: SheMyWifee\n\nVersion 1.0")
                 .setPositiveButton("Gasss", null)
                 .show()
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.fab_search).setOnClickListener {
             val input = EditText(this).apply {
-                hint = "Cari wallpaper..."
+                hint = "Find wallpaper..."
                 setPadding(48, 32, 48, 32)
                 background = null
             }
