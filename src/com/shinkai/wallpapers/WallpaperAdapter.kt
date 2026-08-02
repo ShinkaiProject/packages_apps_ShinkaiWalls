@@ -1,6 +1,5 @@
 package com.shinkai.wallpapers
 
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +13,6 @@ class WallpaperAdapter(
 ) : RecyclerView.Adapter<WallpaperAdapter.VH>() {
 
     class VH(view: View) : RecyclerView.ViewHolder(view) {
-
         val image: ImageView = view.findViewById(R.id.wallpaper_image)
         val label: TextView = view.findViewById(R.id.wallpaper_title)
     }
@@ -28,10 +26,9 @@ class WallpaperAdapter(
     override fun onBindViewHolder(holder: VH, position: Int) {
         val item = items[position]
         holder.label.text = item.name
-        holder.image.context.assets.open(item.assetPath).use { input ->
-            val opts = BitmapFactory.Options().apply { inSampleSize = 4 }
-            holder.image.setImageBitmap(BitmapFactory.decodeStream(input, null, opts))
-        }
+        
+        ImageLoader.load(item.assetPath, holder.image)
+        
         holder.image.setOnClickListener { onClick(item) }
     }
 

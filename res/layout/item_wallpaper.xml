@@ -13,7 +13,7 @@
         android:layout_height="240dp"
         app:cardCornerRadius="24dp"
         app:cardElevation="0dp"
-        app:strokeWidth="6dp"
+        app:strokeWidth="0dp"
         app:strokeColor="?attr/colorOutlineVariant">
 
         <ImageView
