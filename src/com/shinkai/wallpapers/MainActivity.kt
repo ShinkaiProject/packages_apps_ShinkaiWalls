@@ -2,15 +2,14 @@ package com.shinkai.wallpapers
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.view.View
+import android.widget.EditText
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputEditText
 import org.json.JSONArray
 
 class MainActivity : AppCompatActivity() {
@@ -33,7 +32,6 @@ class MainActivity : AppCompatActivity() {
 
         val grid = findViewById<RecyclerView>(R.id.wallpaper_grid)
         grid.layoutManager = GridLayoutManager(this, 2)
-        
         setupAdapter(grid, allWallpapers)
 
         findViewById<ImageButton>(R.id.btn_about).setOnClickListener {
@@ -45,23 +43,33 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
 
-        val searchBar = findViewById<TextInputEditText>(R.id.search_bar)
-        searchBar.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            
-            override fun afterTextChanged(s: Editable?) {
-                val keyword = s.toString().trim().lowercase()
-                
-                val filteredList = if (keyword.isEmpty()) {
-                    allWallpapers
-                } else {
-                    allWallpapers.filter { it.name.lowercase().contains(keyword) }
-                }
-                
-                setupAdapter(grid, filteredList)
+        findViewById<View>(R.id.fab_search).setOnClickListener {
+            val input = EditText(this).apply {
+                hint = "Cari wallpaper..."
+                setPadding(48, 32, 48, 32)
+                background = null
             }
-        })
+
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Search")
+                .setView(input)
+                .setPositiveButton("Cari") { _, _ ->
+                    val keyword = input.text.toString().trim().lowercase()
+                    
+                    val filteredList = if (keyword.isEmpty()) {
+                        allWallpapers
+                    } else {
+                        allWallpapers.filter { it.name.lowercase().contains(keyword) }
+                    }
+                    
+                    setupAdapter(grid, filteredList)
+                }
+                .setNegativeButton("Batal") { _, _ ->
+
+                    setupAdapter(grid, allWallpapers)
+                }
+                .show()
+        }
     }
 
     private fun setupAdapter(grid: RecyclerView, list: List<Wallpaper>) {
