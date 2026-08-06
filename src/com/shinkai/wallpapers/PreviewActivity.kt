@@ -3,6 +3,7 @@ package com.shinkai.wallpapers
 import android.app.WallpaperManager
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.view.View
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.Toast
@@ -11,6 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import java.net.URL
 
 class PreviewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,20 +20,23 @@ class PreviewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_preview)
 
-        val path = intent.getStringExtra("asset_path") ?: return finish()
+        // Menerima URL full_url atau asset_path dari Intent
+        val imageUrl = intent.getStringExtra("asset_path") ?: return finish()
+        val imageView = findViewById<ImageView>(R.id.preview_image)
 
-        findViewById<ImageView>(R.id.preview_image).setImageBitmap(BitmapFactory.decodeStream(assets.open(path)))
+        // Load gambar preview menggunakan ImageLoader online
+        ImageLoader.load(imageUrl, imageView)
 
-        findViewById<android.view.View>(R.id.btn_back).setOnClickListener {
+        findViewById<View>(R.id.btn_back).setOnClickListener {
             finish()
         }
 
         findViewById<MaterialButton>(R.id.btn_next).setOnClickListener {
-            showApplyBottomSheet(path)
+            showApplyBottomSheet(imageUrl)
         }
     }
 
-    private fun showApplyBottomSheet(path: String) {
+    private fun showApplyBottomSheet(url: String) {
         val dialog = BottomSheetDialog(this)
         val view = layoutInflater.inflate(R.layout.bottom_sheet_apply, null)
         dialog.setContentView(view)
@@ -56,13 +61,13 @@ class PreviewActivity : AppCompatActivity() {
             }
 
             dialog.dismiss()
-            setWallpaperWithLoading(path, flag)
+            setWallpaperWithLoading(url, flag)
         }
 
         dialog.show()
     }
 
-    private fun setWallpaperWithLoading(path: String, flag: Int) {
+    private fun setWallpaperWithLoading(urlString: String, flag: Int) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_loading, null)
         
         val loadingDialog = MaterialAlertDialogBuilder(this)
@@ -75,53 +80,30 @@ class PreviewActivity : AppCompatActivity() {
 
         Thread {
             try {
+                // Download dan decode bitmap langsung dari URL internet
+                val stream = URL(urlString).openStream()
+                val bitmap = BitmapFactory.decodeStream(stream)
+                stream.close()
 
-                val displayMetrics = resources.displayMetrics
-                val targetWidth = displayMetrics.widthPixels
-                val targetHeight = displayMetrics.heightPixels
-
-                val options = BitmapFactory.Options().apply {
-                    inJustDecodeBounds = true
-                }
-                assets.open(path).use { BitmapFactory.decodeStream(it, null, options) }
-
-                options.inSampleSize = calculateInSampleSize(options, targetWidth, targetHeight)
-                options.inJustDecodeBounds = false
-                options.inPreferredConfig = android.graphics.Bitmap.Config.ARGB_8888 
-
-                val optimizedBmp = assets.open(path).use { BitmapFactory.decodeStream(it, null, options) }
-
-                if (optimizedBmp != null) {
-                    WallpaperManager.getInstance(this).setBitmap(optimizedBmp, null, true, flag)
-                    optimizedBmp.recycle() 
-                }
-                
-                runOnUiThread {
-                    loadingDialog.dismiss()
-                    Toast.makeText(this, "Wallpaper successfully installed.", Toast.LENGTH_SHORT).show()
-                    finish()
+                if (bitmap != null) {
+                    WallpaperManager.getInstance(this).setBitmap(bitmap, null, true, flag)
+                    bitmap.recycle()
+                    
+                    runOnUiThread {
+                        loadingDialog.dismiss()
+                        Toast.makeText(this, "Wallpaper successfully installed.", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                } else {
+                    throw Exception("Gagal mendecode gambar dari server.")
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 runOnUiThread {
                     loadingDialog.dismiss()
-                    Toast.makeText(this, "Failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Failed: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }.start()
-    }
-
-    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
-        val (height: Int, width: Int) = options.outHeight to options.outWidth
-        var inSampleSize = 1
-
-        if (height > reqHeight || width > reqWidth) {
-            val halfHeight: Int = height / 2
-            val halfWidth: Int = width / 2
-
-            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
-                inSampleSize *= 2
-            }
-        }
-        return inSampleSize
     }
 }

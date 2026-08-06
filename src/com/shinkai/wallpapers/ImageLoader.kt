@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.LruCache
 import android.widget.ImageView
+import java.net.URL
 import java.util.concurrent.Executors
 
 object ImageLoader {
@@ -22,11 +23,11 @@ object ImageLoader {
     private val executor = Executors.newFixedThreadPool(4)
     private val handler = Handler(Looper.getMainLooper())
 
-    fun load(assetPath: String, imageView: ImageView) {
+    fun load(imageUrl: String, imageView: ImageView) {
 
-        imageView.tag = assetPath
+        imageView.tag = imageUrl
 
-        val cachedBitmap = memoryCache.get(assetPath)
+        val cachedBitmap = memoryCache.get(imageUrl)
         if (cachedBitmap != null) {
             imageView.setImageBitmap(cachedBitmap)
             return
@@ -36,16 +37,16 @@ object ImageLoader {
 
         executor.execute {
             try {
-                val stream = imageView.context.assets.open(assetPath)
-                val opts = BitmapFactory.Options().apply { inSampleSize = 4 }
-                val bitmap = BitmapFactory.decodeStream(stream, null, opts)
+                // Url Image Downloader
+                val stream = URL(imageUrl).openStream()
+                val bitmap = BitmapFactory.decodeStream(stream)
                 stream.close()
 
                 if (bitmap != null) {
-                    memoryCache.put(assetPath, bitmap)
+                    memoryCache.put(imageUrl, bitmap)
                     
                     handler.post {
-                        if (imageView.tag == assetPath) {
+                        if (imageView.tag == imageUrl) {
                             imageView.setImageBitmap(bitmap)
                         }
                     }

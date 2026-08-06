@@ -5,16 +5,26 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
+import java.net.URL
 
 class MainActivity : AppCompatActivity() {
     
     private var allWallpapers: List<Wallpaper> = listOf()
+    private lateinit var grid: RecyclerView
+
+    // Menggunakan Direct Raw Link dari GitHub
+    private val JSON_URL = "https://raw.githubusercontent.com/Shinkaiprjkt/shinkai-walls-assets/hekkaideka/wallpapers.json"
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -23,16 +33,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val json = assets.open("wallpapers/manifest.json").bufferedReader().use { it.readText() }
-        val arr = JSONArray(json)
-        allWallpapers = (0 until arr.length()).map { i ->
-            val o = arr.getJSONObject(i)
-            Wallpaper(o.getString("name"), "wallpapers/${o.getString("file")}")
-        }
-
-        val grid = findViewById<RecyclerView>(R.id.wallpaper_grid)
+        grid = findViewById(R.id.wallpaper_grid)
         grid.layoutManager = GridLayoutManager(this, 2)
-        setupAdapter(grid, allWallpapers)
+
+        // Load Json Online
+        fetchWallpapersOnline()
 
         findViewById<ImageButton>(R.id.btn_about).setOnClickListener {
             MaterialAlertDialogBuilder(this)
@@ -65,18 +70,43 @@ class MainActivity : AppCompatActivity() {
                     setupAdapter(grid, filteredList)
                 }
                 .setNegativeButton("Batal") { _, _ ->
-
                     setupAdapter(grid, allWallpapers)
                 }
                 .show()
         }
     }
 
+    private fun fetchWallpapersOnline() {
+        lifecycleScope.launch {
+            try {
+                val wallpapers = withContext(Dispatchers.IO) {
+                    val json = URL(JSON_URL).readText()
+                    val arr = JSONArray(json)
+                    (0 until arr.length()).map { i ->
+                        val o = arr.getJSONObject(i)
+                        
+                        val name = o.getString("name")
+                        val imageUrl = o.getString("thumbnail_url")
+                        val fullUrl = o.getString("full_url")
+                        
+                        Wallpaper(name, imageUrl, fullUrl)
+                    }
+                }
+                allWallpapers = wallpapers
+                setupAdapter(grid, allWallpapers)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this@MainActivity, "Gagal memuat data dari internet", Toast.LENGTH_SHORT).show()
+            }
+        }
+    } // <--- Kurung kurawal penutup untuk fetchWallpapersOnline() ditambahkan di sini
+
     private fun setupAdapter(grid: RecyclerView, list: List<Wallpaper>) {
         grid.adapter = WallpaperAdapter(list) { wp ->
             startActivity(Intent(this, PreviewActivity::class.java)
-                .putExtra("asset_path", wp.assetPath)
+                .putExtra("asset_path", wp.fullUrl)
                 .putExtra("wallpaper_name", wp.name))
         }
     }
-}
+} // <--- Kurung kurawal penutup utama untuk class MainActivity
+
