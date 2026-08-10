@@ -9,6 +9,7 @@ android_app {
     certificate: "platform",
     static_libs: [
         "androidx.recyclerview_recyclerview",
+        "androidx.swiperefreshlayout_swiperefreshlayout",
         "androidx.appcompat_appcompat",
         "com.google.android.material_material"
     ],

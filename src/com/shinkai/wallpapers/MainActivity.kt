@@ -10,7 +10,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     
     private var allWallpapers: List<Wallpaper> = listOf()
     private lateinit var grid: RecyclerView
+    private lateinit var swipeRefresh: SwipeRefreshLayout
 
     // Menggunakan Direct Raw Link dari GitHub
     private val JSON_URL = "https://raw.githubusercontent.com/Shinkaiprjkt/shinkai-walls-assets/hekkaideka/wallpapers.json"
@@ -35,6 +38,17 @@ class MainActivity : AppCompatActivity() {
 
         grid = findViewById(R.id.wallpaper_grid)
         grid.layoutManager = GridLayoutManager(this, 2)
+
+        swipeRefresh = findViewById(R.id.swipe_refresh)
+        swipeRefresh.setColorSchemeColors(
+            MaterialColors.getColor(swipeRefresh, R.attr.colorPrimary)
+        )
+        swipeRefresh.setProgressBackgroundColorSchemeColor(
+            MaterialColors.getColor(swipeRefresh, R.attr.colorSurface)
+        )
+        swipeRefresh.setOnRefreshListener {
+            fetchWallpapersOnline()
+        }
 
         // Load Json Online
         fetchWallpapersOnline()
@@ -97,6 +111,8 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(this@MainActivity, "Gagal memuat data dari internet", Toast.LENGTH_SHORT).show()
+            } finally {
+                swipeRefresh.isRefreshing = false
             }
         }
     } // <--- Kurung kurawal penutup untuk fetchWallpapersOnline() ditambahkan di sini
@@ -109,4 +125,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 } // <--- Kurung kurawal penutup utama untuk class MainActivity
-
