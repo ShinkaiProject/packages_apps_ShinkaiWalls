@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.LruCache
 import android.widget.ImageView
+import java.lang.ref.WeakReference
 import java.net.URL
 import java.util.concurrent.Executors
 
@@ -34,20 +35,25 @@ object ImageLoader {
         }
 
         imageView.setImageDrawable(null)
+        val viewRef = WeakReference(imageView)
 
         executor.execute {
             try {
                 // Url Image Downloader
-                val stream = URL(imageUrl).openStream()
+                val connection = URL(imageUrl).openConnection()
+                connection.connectTimeout = 10_000
+                connection.readTimeout = 10_000
+                val stream = connection.getInputStream()
                 val bitmap = BitmapFactory.decodeStream(stream)
                 stream.close()
 
                 if (bitmap != null) {
                     memoryCache.put(imageUrl, bitmap)
-                    
+
                     handler.post {
-                        if (imageView.tag == imageUrl) {
-                            imageView.setImageBitmap(bitmap)
+                        val view = viewRef.get()
+                        if (view != null && view.tag == imageUrl) {
+                            view.setImageBitmap(bitmap)
                         }
                     }
                 }

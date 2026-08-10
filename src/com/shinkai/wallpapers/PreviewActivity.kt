@@ -81,18 +81,23 @@ class PreviewActivity : AppCompatActivity() {
         Thread {
             try {
                 // Download dan decode bitmap langsung dari URL internet
-                val stream = URL(urlString).openStream()
+                val connection = URL(urlString).openConnection()
+                connection.connectTimeout = 10_000
+                connection.readTimeout = 10_000
+                val stream = connection.getInputStream()
                 val bitmap = BitmapFactory.decodeStream(stream)
                 stream.close()
 
                 if (bitmap != null) {
                     WallpaperManager.getInstance(this).setBitmap(bitmap, null, true, flag)
                     bitmap.recycle()
-                    
+
                     runOnUiThread {
-                        loadingDialog.dismiss()
-                        Toast.makeText(this, "Wallpaper successfully installed.", Toast.LENGTH_SHORT).show()
-                        finish()
+                        if (!isFinishing && !isDestroyed) {
+                            loadingDialog.dismiss()
+                            Toast.makeText(this, "Wallpaper successfully installed.", Toast.LENGTH_SHORT).show()
+                            finish()
+                        }
                     }
                 } else {
                     throw Exception("Gagal mendecode gambar dari server.")
@@ -100,8 +105,10 @@ class PreviewActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 runOnUiThread {
-                    loadingDialog.dismiss()
-                    Toast.makeText(this, "Failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    if (!isFinishing && !isDestroyed) {
+                        loadingDialog.dismiss()
+                        Toast.makeText(this, "Failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }.start()
