@@ -27,7 +27,14 @@ class WallpaperAdapter(
         val item = items[position]
         holder.label.text = item.name
         
-        ImageLoader.load(item.assetPath, holder.image)
+        // Memuat thumbnail dengan resolusi teroptimasi untuk grid
+        ImageLoader.load(
+            context = holder.itemView.context,
+            imageUrl = item.assetPath,
+            imageView = holder.image,
+            targetWidth = 300,
+            targetHeight = 500
+        )
         
         holder.image.setOnClickListener { onClick(item) }
     }

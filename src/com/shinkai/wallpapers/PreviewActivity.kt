@@ -34,8 +34,19 @@ class PreviewActivity : AppCompatActivity() {
         
         val imageView = findViewById<ImageView>(R.id.preview_image)
 
-        // Load gambar preview
-        ImageLoader.load(imageUrl, imageView)
+        // Dapatkan resolusi layar untuk memuat preview secara optimal
+        val displayMetrics = resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels
+        val screenHeight = displayMetrics.heightPixels
+
+        // Load gambar preview dengan ImageLoader yang teroptimasi
+        ImageLoader.load(
+            context = this,
+            imageUrl = imageUrl,
+            imageView = imageView,
+            targetWidth = screenWidth,
+            targetHeight = screenHeight
+        )
 
         findViewById<View>(R.id.btn_back).setOnClickListener {
             finish()
@@ -88,19 +99,16 @@ class PreviewActivity : AppCompatActivity() {
         loadingDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         loadingDialog.show()
 
-        // Menggunakan Coroutine lifecycleScope (Dispatchers.IO) menggantikan Thread biasa
         lifecycleScope.launch(Dispatchers.IO) {
             val safeFileName = "${name.replace(Regex("[^A-Za-z0-9]"), "_")}.jpg"
             val wallsDirectory = File(filesDir, "saved_wallpapers")
             val localFile = File(wallsDirectory, safeFileName)
 
             try {
-                // 1. Buat direktori lokal jika belum ada
                 if (!wallsDirectory.exists()) {
                     wallsDirectory.mkdirs()
                 }
 
-                // 2. Cek apakah file sudah ada. Jika BELUM ada -> Download & simpan
                 if (!localFile.exists()) {
                     val connection = URL(urlString).openConnection()
                     connection.connectTimeout = 10_000
@@ -113,13 +121,11 @@ class PreviewActivity : AppCompatActivity() {
                     }
                 }
 
-                // 3. Pasang wallpaper dari InputStream file lokal
                 val wallpaperManager = WallpaperManager.getInstance(this@PreviewActivity)
                 localFile.inputStream().use { stream ->
                     wallpaperManager.setStream(stream, null, true, flag)
                 }
 
-                // Update UI di Main Thread
                 withContext(Dispatchers.Main) {
                     if (!isFinishing && !isDestroyed) {
                         loadingDialog.dismiss()
@@ -131,7 +137,6 @@ class PreviewActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 
-                // Hapus file jika proses download terhenti/corrupt di tengah jalan
                 if (localFile.exists() && localFile.length() == 0L) {
                     localFile.delete()
                 }

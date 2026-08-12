@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var grid: RecyclerView
     private lateinit var swipeRefresh: SwipeRefreshLayout
 
-    // Menggunakan Direct Raw Link dari GitHub
     private val JSON_URL = "https://raw.githubusercontent.com/Shinkaiprjkt/shinkai-walls-assets/hekkaideka/wallpapers.json"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +37,10 @@ class MainActivity : AppCompatActivity() {
 
         grid = findViewById(R.id.wallpaper_grid)
         grid.layoutManager = GridLayoutManager(this, 2)
+        
+        // Optimasi RecyclerView untuk scroll super halus
+        grid.setHasFixedSize(true)
+        grid.setItemViewCacheSize(20)
 
         swipeRefresh = findViewById(R.id.swipe_refresh)
         swipeRefresh.setColorSchemeColors(
@@ -50,7 +53,6 @@ class MainActivity : AppCompatActivity() {
             fetchWallpapersOnline()
         }
 
-        // Load Json Online
         fetchWallpapersOnline()
 
         findViewById<ImageButton>(R.id.btn_about).setOnClickListener {
@@ -115,7 +117,7 @@ class MainActivity : AppCompatActivity() {
                 swipeRefresh.isRefreshing = false
             }
         }
-    } // <--- Kurung kurawal penutup untuk fetchWallpapersOnline() ditambahkan di sini
+    }
 
     private fun setupAdapter(grid: RecyclerView, list: List<Wallpaper>) {
         grid.adapter = WallpaperAdapter(list) { wp ->
@@ -124,4 +126,4 @@ class MainActivity : AppCompatActivity() {
                 .putExtra("wallpaper_name", wp.name))
         }
     }
-} // <--- Kurung kurawal penutup utama untuk class MainActivity
+}
