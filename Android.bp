@@ -2,7 +2,6 @@ android_app {
     name: "ShinkaiWalls",
     srcs: ["src/**/*.kt"],
     resource_dirs: ["res"],
-    asset_dirs: ["assets"],
     manifest: "AndroidManifest.xml",
     platform_apis: true,
     system_ext_specific: true,
