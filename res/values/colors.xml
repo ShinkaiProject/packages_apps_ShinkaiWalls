@@ -1,3 +1,5 @@
 <resources>
-    <color name="ic_launcher_background">#0F1115</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
+    <color name="ic_launcher_gradient_start">#BB8AFF</color>
+    <color name="ic_launcher_gradient_end">#0F8CFF</color>
 </resources>
