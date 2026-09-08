@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var grid: RecyclerView
     private lateinit var swipeRefresh: SwipeRefreshLayout
 
-    private val JSON_URL = "https://raw.githubusercontent.com/Shinkaiprjkt/shinkai-walls-assets/heptakaideka/wallpapers.json"
+    private val JSON_URL = "https://raw.githubusercontent.com/ShinkaiProject/shinkai-walls-assets/heptakaideka/wallpapers.json"
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
