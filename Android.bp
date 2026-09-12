@@ -10,7 +10,10 @@ android_app {
         "androidx.recyclerview_recyclerview",
         "androidx.swiperefreshlayout_swiperefreshlayout",
         "androidx.appcompat_appcompat",
-        "com.google.android.material_material"
+        "com.google.android.material_material",
+    ],
+    shared_libs: [
+        "libshinkai",
     ],
     optimize: {
         enabled: false,

@@ -18,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
-import java.net.URL
 
 class MainActivity : AppCompatActivity() {
     
@@ -44,10 +43,10 @@ class MainActivity : AppCompatActivity() {
 
         swipeRefresh = findViewById(R.id.swipe_refresh)
         swipeRefresh.setColorSchemeColors(
-            MaterialColors.getColor(swipeRefresh, R.attr.colorPrimary)
+            MaterialColors.getColor(swipeRefresh, com.google.android.material.R.attr.colorPrimary)
         )
         swipeRefresh.setProgressBackgroundColorSchemeColor(
-            MaterialColors.getColor(swipeRefresh, R.attr.colorSurface)
+            MaterialColors.getColor(swipeRefresh, com.google.android.material.R.attr.colorSurface)
         )
         swipeRefresh.setOnRefreshListener {
             fetchWallpapersOnline()
@@ -57,24 +56,24 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<ImageButton>(R.id.btn_about).setOnClickListener {
             MaterialAlertDialogBuilder(this)
-                .setTitle("About App")
-                .setIcon(R.mipmap.ic_launcher) 
-                .setMessage("Shinkai Walls\n\nDeveloper: Mnskkyy\nDesainer: SheMyWifee\n\nVersion 1.0")
-                .setPositiveButton("Gasss", null)
+                .setTitle(R.string.about_title)
+                .setIcon(R.mipmap.ic_launcher)
+                .setMessage(R.string.about_message)
+                .setPositiveButton(R.string.about_dismiss, null)
                 .show()
         }
 
         findViewById<View>(R.id.fab_search).setOnClickListener {
             val input = EditText(this).apply {
-                hint = "Find wallpaper..."
+                hint = getString(R.string.search_hint)
                 setPadding(48, 32, 48, 32)
                 background = null
             }
 
             MaterialAlertDialogBuilder(this)
-                .setTitle("Search")
+                .setTitle(R.string.search_title)
                 .setView(input)
-                .setPositiveButton("Cari") { _, _ ->
+                .setPositiveButton(R.string.searchPositiveButton) { _, _ ->
                     val keyword = input.text.toString().trim().lowercase()
                     
                     val filteredList = if (keyword.isEmpty()) {
@@ -83,9 +82,17 @@ class MainActivity : AppCompatActivity() {
                         allWallpapers.filter { it.name.lowercase().contains(keyword) }
                     }
                     
-                    setupAdapter(grid, filteredList)
+                    if (filteredList.isEmpty()) {
+                        MaterialAlertDialogBuilder(this)
+                            .setTitle(R.string.search_not_found_title)
+                            .setMessage(R.string.search_not_found_message)
+                            .setPositiveButton(R.string.search_not_found_dismiss, null)
+                            .show()
+                    } else {
+                        setupAdapter(grid, filteredList)
+                    }
                 }
-                .setNegativeButton("Batal") { _, _ ->
+                .setNegativeButton(R.string.searchNegativeButton) { _, _ ->
                     setupAdapter(grid, allWallpapers)
                 }
                 .show()
@@ -95,24 +102,23 @@ class MainActivity : AppCompatActivity() {
     private fun fetchWallpapersOnline() {
         lifecycleScope.launch {
             try {
-                val wallpapers = withContext(Dispatchers.IO) {
-                    val json = URL(JSON_URL).readText()
-                    val arr = JSONArray(json)
-                    (0 until arr.length()).map { i ->
-                        val o = arr.getJSONObject(i)
-                        
-                        val name = o.getString("name")
-                        val imageUrl = o.getString("thumbnail_url")
-                        val fullUrl = o.getString("full_url")
-                        
-                        Wallpaper(name, imageUrl, fullUrl)
-                    }
+                val json = withContext(Dispatchers.IO) {
+                    NativeLib.fetchWallpapers(JSON_URL)
+                }
+                val arr = JSONArray(json)
+                val wallpapers = (0 until arr.length()).map { i ->
+                    val o = arr.getJSONObject(i)
+                    Wallpaper(
+                        o.getString("name"),
+                        o.getString("thumbnail_url"),
+                        o.getString("full_url")
+                    )
                 }
                 allWallpapers = wallpapers
                 setupAdapter(grid, allWallpapers)
             } catch (e: Exception) {
                 e.printStackTrace()
-                Toast.makeText(this@MainActivity, "Gagal memuat data dari internet", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, R.string.error_network, Toast.LENGTH_SHORT).show()
             } finally {
                 swipeRefresh.isRefreshing = false
             }
