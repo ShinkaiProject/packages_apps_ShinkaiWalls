@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:textColor="#A0A0A0" 
+        android:textColor="?attr/colorOnSurface"
         android:textSize="15sp"
         android:fontFamily="@font/linotte"
         android:maxLines="1"
