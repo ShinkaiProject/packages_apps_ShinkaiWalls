@@ -1,14 +1,29 @@
 <resources>
     <string name="app_name">Shinkai Walls</string>
 
-    <!-- Search -->
-    <string name="search_title">Search</string>
-    <string name="search_hint">Find wallpaper…</string>
-    <string name="searchPositiveButton">Search</string>
-    <string name="searchNegativeButton">Cancel</string>
-    <string name="search_not_found_title">Wallpaper Not Found</string>
-    <string name="search_not_found_message">The wallpaper you are looking for is unavailable or could not be found.</string>
-    <string name="search_not_found_dismiss">OK</string>
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_walls">Walls</string>
+
+    <!-- Wall Categories -->
+    <string name="walls_title">Walls</string>
+    <string name="walls_empty">No categories available yet.</string>
+    <string name="category_empty">No wallpapers in this category yet.</string>
+    <string name="category_card_description">%1$s, %2$s</string>
+    <plurals name="walls_count">
+        <item quantity="one">%d wall</item>
+        <item quantity="other">%d walls</item>
+    </plurals>
+
+    <!-- Category names -->
+    <string name="category_emerald">Emerald</string>
+    <string name="category_chalcedony">Chalcedony</string>
+    <string name="category_amoled">AMOLED</string>
+    <string name="category_nature">Nature</string>
+    <string name="category_abstract">Abstract</string>
+    <string name="category_anime">Anime</string>
+    <string name="category_minimal">Minimal</string>
+    <string name="category_custom">Custom</string>
 
     <!-- About -->
     <string name="about_title">About App</string>

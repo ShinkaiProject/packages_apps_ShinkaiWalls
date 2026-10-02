@@ -29,8 +29,8 @@ class PreviewActivity : AppCompatActivity() {
         setContentView(R.layout.activity_preview)
 
         // Menerima URL dan Nama Wallpaper dari Intent
-        val imageUrl = intent.getStringExtra("asset_path") ?: return finish()
-        wallpaperName = intent.getStringExtra("wallpaper_name") ?: "wallpaper"
+        val imageUrl = intent.getStringExtra(EXTRA_ASSET_PATH) ?: return finish()
+        wallpaperName = intent.getStringExtra(EXTRA_WALLPAPER_NAME) ?: "wallpaper"
         
         val imageView = findViewById<ImageView>(R.id.preview_image)
 
@@ -149,5 +149,10 @@ class PreviewActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        const val EXTRA_ASSET_PATH = "asset_path"
+        const val EXTRA_WALLPAPER_NAME = "wallpaper_name"
     }
 }

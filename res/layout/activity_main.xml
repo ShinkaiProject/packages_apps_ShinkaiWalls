@@ -92,23 +92,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:paddingBottom="88dp" />
+                android:paddingBottom="88dp"
+                android:layoutAnimation="@anim/layout_fade_in" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </LinearLayout>
 
-    <!-- Floating Action Button -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_search"
-        android:layout_width="wrap_content"
+    <!-- Floating Navigation Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
-        android:src="@android:drawable/ic_menu_search"
-        app:backgroundTint="?attr/colorPrimaryContainer"
-        app:tint="?attr/colorOnPrimaryContainer"
-        app:elevation="0dp" />
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:paddingBottom="0dp">
+
+        <com.shinkai.wallpapers.FloatingNavigationView
+            android:id="@+id/nav_floating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_floating_nav"
+            android:elevation="6dp"
+            android:paddingHorizontal="0dp"
+            android:paddingVertical="4dp" />
+
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

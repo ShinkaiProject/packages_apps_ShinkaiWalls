@@ -23,6 +23,14 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".WallsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ShinkaiWallpapers" />
+
+        <activity android:name=".CategoryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ShinkaiWallpapers" />
+
         <activity android:name=".PreviewActivity"
             android:exported="false"
             android:theme="@style/Theme.ShinkaiWallpapers" />

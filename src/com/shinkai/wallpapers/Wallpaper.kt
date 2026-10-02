@@ -1,7 +1,8 @@
 package com.shinkai.wallpapers
 
 data class Wallpaper(
-    val name: String, 
+    val name: String,
     val assetPath: String,
-    val fullUrl: String
+    val fullUrl: String,
+    val category: String? = null
 )

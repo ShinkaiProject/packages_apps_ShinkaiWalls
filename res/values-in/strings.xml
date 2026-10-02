@@ -1,14 +1,28 @@
 <resources>
     <string name="app_name">Shinkai Walls</string>
 
-    <!-- Search -->
-    <string name="search_title">Cari</string>
-    <string name="search_hint">Cari wallpaper…</string>
-    <string name="searchPositiveButton">Cari</string>
-    <string name="searchNegativeButton">Batal</string>
-    <string name="search_not_found_title">Wallpaper Tidak Ditemukan</string>
-    <string name="search_not_found_message">Wallpaper yang Anda cari tidak tersedia atau tidak dapat ditemukan.</string>
-    <string name="search_not_found_dismiss">OK</string>
+    <!-- Navigation -->
+    <string name="nav_home">Beranda</string>
+    <string name="nav_walls">Dinding</string>
+
+    <!-- Wall Categories -->
+    <string name="walls_title">Dinding</string>
+    <string name="walls_empty">Belum ada kategori.</string>
+    <string name="category_empty">Belum ada wallpaper di kategori ini.</string>
+    <string name="category_card_description">%1$s, %2$s</string>
+    <plurals name="walls_count">
+        <item quantity="other">%d wallpaper</item>
+    </plurals>
+
+    <!-- Category names -->
+    <string name="category_emerald">Emerald</string>
+    <string name="category_chalcedony">Chalcedony</string>
+    <string name="category_amoled">AMOLED</string>
+    <string name="category_nature">Alam</string>
+    <string name="category_abstract">Abstrak</string>
+    <string name="category_anime">Anime</string>
+    <string name="category_minimal">Minimalis</string>
+    <string name="category_custom">Kustom</string>
 
     <!-- About -->
     <string name="about_title">Tentang Aplikasi</string>

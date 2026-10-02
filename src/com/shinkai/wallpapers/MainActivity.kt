@@ -1,9 +1,6 @@
 package com.shinkai.wallpapers
 
-import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,18 +11,22 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
 
 class MainActivity : AppCompatActivity() {
-    
+
     private var allWallpapers: List<Wallpaper> = listOf()
     private lateinit var grid: RecyclerView
     private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var navBar: FloatingNavigationView
 
-    private val JSON_URL = "https://raw.githubusercontent.com/ShinkaiProject/shinkai-walls-assets/heptakaideka/wallpapers.json"
+    /**
+     * One shot marker that this Home instance is about to be left for Walls, so the wallpaper
+     * cards replay their rise once it is resumed again. Home is reused through `CLEAR_TOP` and
+     * keeps its adapter, which is why the layout animation has to be requested by hand here
+     * instead of running on its own.
+     */
+    private var replayCardsOnResume = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -52,6 +53,15 @@ class MainActivity : AppCompatActivity() {
             fetchWallpapersOnline()
         }
 
+        navBar = findViewById(R.id.nav_floating)
+        navBar.setItems(TopLevelDestination.entries)
+        navBar.setOnItemSelectedListener { destination ->
+            if (destination != TopLevelDestination.HOME) {
+                replayCardsOnResume = true
+                openDestination(destination)
+            }
+        }
+
         fetchWallpapersOnline()
 
         findViewById<ImageButton>(R.id.btn_about).setOnClickListener {
@@ -62,59 +72,26 @@ class MainActivity : AppCompatActivity() {
                 .setPositiveButton(R.string.about_dismiss, null)
                 .show()
         }
+    }
 
-        findViewById<View>(R.id.fab_search).setOnClickListener {
-            val input = EditText(this).apply {
-                hint = getString(R.string.search_hint)
-                setPadding(48, 32, 48, 32)
-                background = null
-            }
-
-            MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.search_title)
-                .setView(input)
-                .setPositiveButton(R.string.searchPositiveButton) { _, _ ->
-                    val keyword = input.text.toString().trim().lowercase()
-                    
-                    val filteredList = if (keyword.isEmpty()) {
-                        allWallpapers
-                    } else {
-                        allWallpapers.filter { it.name.lowercase().contains(keyword) }
-                    }
-                    
-                    if (filteredList.isEmpty()) {
-                        MaterialAlertDialogBuilder(this)
-                            .setTitle(R.string.search_not_found_title)
-                            .setMessage(R.string.search_not_found_message)
-                            .setPositiveButton(R.string.search_not_found_dismiss, null)
-                            .show()
-                    } else {
-                        setupAdapter(grid, filteredList)
-                    }
-                }
-                .setNegativeButton(R.string.searchNegativeButton) { _, _ ->
-                    setupAdapter(grid, allWallpapers)
-                }
-                .show()
+    /**
+     * Being resumed is what makes this the current destination, so the active pill is derived
+     * here instead of from a click. That covers creation, back navigation, `CLEAR_TOP` reuse of
+     * this instance, background returns and configuration changes.
+     */
+    override fun onResume() {
+        super.onResume()
+        navBar.showDestination(TopLevelDestination.HOME)
+        if (replayCardsOnResume) {
+            replayCardsOnResume = false
+            if (allWallpapers.isNotEmpty()) grid.scheduleLayoutAnimation()
         }
     }
 
     private fun fetchWallpapersOnline() {
         lifecycleScope.launch {
             try {
-                val json = withContext(Dispatchers.IO) {
-                    NativeLib.fetchWallpapers(JSON_URL)
-                }
-                val arr = JSONArray(json)
-                val wallpapers = (0 until arr.length()).map { i ->
-                    val o = arr.getJSONObject(i)
-                    Wallpaper(
-                        o.getString("name"),
-                        o.getString("thumbnail_url"),
-                        o.getString("full_url")
-                    )
-                }
-                allWallpapers = wallpapers
+                allWallpapers = WallpaperRepository.load(forceRefresh = true)
                 setupAdapter(grid, allWallpapers)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -127,9 +104,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupAdapter(grid: RecyclerView, list: List<Wallpaper>) {
         grid.adapter = WallpaperAdapter(list) { wp ->
-            startActivity(Intent(this, PreviewActivity::class.java)
-                .putExtra("asset_path", wp.fullUrl)
-                .putExtra("wallpaper_name", wp.name))
+            openWallpaperPreview(wp)
         }
     }
 }

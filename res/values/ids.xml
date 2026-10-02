@@ -1,0 +1,5 @@
+<resources>
+    <!-- Floating navigation destinations -->
+    <item name="nav_item_home" type="id" />
+    <item name="nav_item_walls" type="id" />
+</resources>
