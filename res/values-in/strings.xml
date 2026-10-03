@@ -18,11 +18,6 @@
     <string name="category_pixel_walls">Pixel Walls</string>
     <string name="category_anime_walls">Anime Walls</string>
 
-    <!-- About -->
-    <string name="about_title">Tentang Aplikasi</string>
-    <string name="about_message">Shinkai Walls\n\nDeveloper: Mnskkyy\nDesainer: SheMyWifee\n\nVersi 1.0</string>
-    <string name="about_dismiss"> Mantap!</string>
-
     <!-- Errors -->
     <string name="error_network">Gagal memuat data dari internet</string>
 

@@ -19,11 +19,6 @@
     <string name="category_pixel_walls">Pixel Walls</string>
     <string name="category_anime_walls">Anime Walls</string>
 
-    <!-- About -->
-    <string name="about_title">About App</string>
-    <string name="about_message">Shinkai Walls\n\nDeveloper: Mnskkyy\nDesainer: SheMyWifee\n\nVersion 1.0</string>
-    <string name="about_dismiss">Nice!</string>
-
     <!-- Errors -->
     <string name="error_network">Failed to load data from internet</string>
 

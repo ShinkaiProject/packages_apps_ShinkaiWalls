@@ -14,34 +14,16 @@
         android:orientation="vertical"
         android:paddingHorizontal="16dp">
 
-        <!-- Top Bar: Title & Info Button -->
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <!-- Top Bar: Title -->
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="Chose your Wall"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/linotte" />
-
-            <ImageButton
-                android:id="@+id/btn_about"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:background="@drawable/bg_round_back_button"
-                android:src="@android:drawable/ic_dialog_info"
-                android:padding="12dp"
-                android:scaleType="fitCenter"
-                app:tint="?attr/colorOnSurface" />
-        </RelativeLayout>
+            android:layout_marginTop="32dp"
+            android:text="Chose your Wall"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/linotte" />
 
         <!-- Featured Banner (Shinkai Walls) -->
         <com.google.android.material.card.MaterialCardView

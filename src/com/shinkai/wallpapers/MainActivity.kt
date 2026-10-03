@@ -1,7 +1,6 @@
 package com.shinkai.wallpapers
 
 import android.os.Bundle
-import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -10,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -64,15 +62,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         fetchWallpapersOnline()
-
-        findViewById<ImageButton>(R.id.btn_about).setOnClickListener {
-            MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.about_title)
-                .setIcon(R.mipmap.ic_launcher)
-                .setMessage(R.string.about_message)
-                .setPositiveButton(R.string.about_dismiss, null)
-                .show()
-        }
     }
 
     /**
