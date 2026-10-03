@@ -15,7 +15,8 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private var allWallpapers: List<Wallpaper> = listOf()
+    /** Wallpapers listed by Home, which defaults to a single category of the library. */
+    private var homeWallpapers: List<Wallpaper> = listOf()
     private lateinit var grid: RecyclerView
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var navBar: FloatingNavigationView
@@ -84,15 +85,19 @@ class MainActivity : AppCompatActivity() {
         navBar.showDestination(TopLevelDestination.HOME)
         if (replayCardsOnResume) {
             replayCardsOnResume = false
-            if (allWallpapers.isNotEmpty()) grid.scheduleLayoutAnimation()
+            if (homeWallpapers.isNotEmpty()) grid.scheduleLayoutAnimation()
         }
     }
 
     private fun fetchWallpapersOnline() {
         lifecycleScope.launch {
             try {
-                allWallpapers = WallpaperRepository.load(forceRefresh = true)
-                setupAdapter(grid, allWallpapers)
+                val library = WallpaperRepository.load(forceRefresh = true)
+                homeWallpapers = WallCategories.wallpapersIn(
+                    library,
+                    WallCategories.DEFAULT_HOME_CATEGORY_ID
+                )
+                setupAdapter(grid, homeWallpapers)
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(this@MainActivity, R.string.error_network, Toast.LENGTH_SHORT).show()

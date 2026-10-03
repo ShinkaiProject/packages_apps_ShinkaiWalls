@@ -5,20 +5,18 @@ import androidx.annotation.StringRes
 /**
  * Declarative description of a wall category.
  *
- * A definition only carries data, never UI, so categories can be added later by appending
- * an entry to [WallCategories] without touching the navigation or the screens.
+ * A category is bound to one folder of the wallpapers assets rather than to keywords, so what the
+ * Walls screen shows always matches what is actually published: a wallpaper belongs to a category
+ * because of the folder its image is stored in, never because of how its name happens to read.
  */
 data class WallCategoryDefinition(
     val id: String,
     @param:StringRes val titleRes: Int,
-    val keywords: List<String>
+    val folder: String
 ) {
     fun matches(wallpaper: Wallpaper): Boolean {
-        if (wallpaper.category != null && wallpaper.category.equals(id, ignoreCase = true)) {
-            return true
-        }
-        val name = wallpaper.name.lowercase()
-        return keywords.any { name.contains(it) }
+        val folder = wallpaper.folder ?: return false
+        return folder.equals(this.folder, ignoreCase = true)
     }
 }
 

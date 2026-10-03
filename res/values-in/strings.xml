@@ -15,14 +15,8 @@
     </plurals>
 
     <!-- Category names -->
-    <string name="category_emerald">Emerald</string>
-    <string name="category_chalcedony">Chalcedony</string>
-    <string name="category_amoled">AMOLED</string>
-    <string name="category_nature">Alam</string>
-    <string name="category_abstract">Abstrak</string>
-    <string name="category_anime">Anime</string>
-    <string name="category_minimal">Minimalis</string>
-    <string name="category_custom">Kustom</string>
+    <string name="category_pixel_walls">Pixel Walls</string>
+    <string name="category_anime_walls">Anime Walls</string>
 
     <!-- About -->
     <string name="about_title">Tentang Aplikasi</string>
