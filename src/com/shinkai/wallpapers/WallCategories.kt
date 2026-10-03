@@ -25,6 +25,11 @@ object WallCategories {
             DEFAULT_HOME_CATEGORY_ID,
             R.string.category_pixel_walls,
             "Pixel-Walls"
+        ),
+        WallCategoryDefinition(
+            "lumina-walls",
+            R.string.category_lumina_walls,
+            "Lumina-Walls"
         )
     )
 
