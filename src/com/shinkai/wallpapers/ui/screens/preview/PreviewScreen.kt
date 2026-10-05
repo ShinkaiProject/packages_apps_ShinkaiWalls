@@ -45,7 +45,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import com.shinkai.wallpapers.ui.components.AsyncImage
 import com.shinkai.wallpapers.R
 import com.shinkai.wallpapers.data.model.Wallpaper
 import kotlinx.coroutines.Dispatchers

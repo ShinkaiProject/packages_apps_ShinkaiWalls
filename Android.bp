@@ -25,8 +25,6 @@ android_app {
         "androidx.lifecycle_lifecycle-viewmodel-compose",
         "kotlinx-coroutines-core",
         "kotlinx-coroutines-android",
-        "coil",
-        "coil-compose",
     ],
 
     kotlincflags: [
