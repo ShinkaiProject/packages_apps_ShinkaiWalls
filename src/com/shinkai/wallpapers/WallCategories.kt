@@ -40,6 +40,11 @@ object WallCategories {
             "elysia-walls",
             R.string.category_elysia_walls,
             "Elysia-Walls"
+        ),
+        WallCategoryDefinition(
+            "mavuika-walls",
+            R.string.category_mavuika_walls,
+            "Mavuika-Walls"
         )
     )
 

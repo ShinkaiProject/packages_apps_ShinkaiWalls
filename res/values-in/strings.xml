@@ -20,6 +20,7 @@
     <string name="category_lumina_walls">Lumina Walls</string>
     <string name="category_neon_orbs_walls">Neon Orbs Walls</string>
     <string name="category_elysia_walls">Elysia Walls</string>
+    <string name="category_mavuika_walls">Mavuika Walls</string>
 
     <!-- Errors -->
     <string name="error_network">Gagal memuat data dari internet</string>
