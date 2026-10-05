@@ -39,8 +39,8 @@ import com.shinkai.wallpapers.data.model.Wallpaper
 import kotlinx.coroutines.delay
 
 /**
- * Material 3 Expressive Horizontal Multi-Browse Carousel matching the
- * official Android Wallpaper Selector UI.
+ * Material 3 Expressive Horizontal Multi-Browse Carousel matching the official Android Wallpaper
+ * Selector UI.
  *
  * Sizing & Morphing Strategy:
  * - Uses [preferredItemWidth] (186.dp) to compute large focal cards.
@@ -60,44 +60,40 @@ fun WallpaperExpressiveCarousel(
     contentPadding: PaddingValues = PaddingValues(horizontal = 14.dp),
     shape: Shape = RoundedCornerShape(26.dp),
     autoScroll: Boolean = true,
-    autoScrollIntervalMs: Long = 3500L
+    autoScrollIntervalMs: Long = 3500L,
 ) {
-    if (wallpapers.isEmpty()) return
+  if (wallpapers.isEmpty()) return
 
-    val state = rememberCarouselState { wallpapers.size }
+  val state = rememberCarouselState { wallpapers.size }
 
-    // Smooth auto-scroll loop that pauses during user manual drag/interaction
-    LaunchedEffect(state, wallpapers.size, autoScroll) {
-        if (autoScroll && wallpapers.size > 1) {
-            while (true) {
-                delay(autoScrollIntervalMs)
-                if (!state.isScrollInProgress) {
-                    val nextItem = (state.currentItem + 1) % wallpapers.size
-                    state.animateScrollToItem(nextItem)
-                }
-            }
+  // Smooth auto-scroll loop that pauses during user manual drag/interaction
+  LaunchedEffect(state, wallpapers.size, autoScroll) {
+    if (autoScroll && wallpapers.size > 1) {
+      while (true) {
+        delay(autoScrollIntervalMs)
+        if (!state.isScrollInProgress) {
+          val nextItem = (state.currentItem + 1) % wallpapers.size
+          state.animateScrollToItem(nextItem)
         }
+      }
     }
+  }
 
-    HorizontalMultiBrowseCarousel(
-        state = state,
-        preferredItemWidth = preferredItemWidth,
-        itemSpacing = itemSpacing,
-        contentPadding = contentPadding,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(itemHeight)
-    ) { index ->
-        val wallpaper = wallpapers[index]
-        WallpaperCarouselItem(
-            wallpaper = wallpaper,
-            shape = shape,
-            onClick = { onWallpaperClick(wallpaper) },
-            modifier = Modifier
-                .height(itemHeight)
-                .maskClip(shape)
-        )
-    }
+  HorizontalMultiBrowseCarousel(
+      state = state,
+      preferredItemWidth = preferredItemWidth,
+      itemSpacing = itemSpacing,
+      contentPadding = contentPadding,
+      modifier = modifier.fillMaxWidth().height(itemHeight),
+  ) { index ->
+    val wallpaper = wallpapers[index]
+    WallpaperCarouselItem(
+        wallpaper = wallpaper,
+        shape = shape,
+        onClick = { onWallpaperClick(wallpaper) },
+        modifier = Modifier.height(itemHeight).maskClip(shape),
+    )
+  }
 }
 
 @Composable
@@ -105,68 +101,71 @@ private fun WallpaperCarouselItem(
     wallpaper: Wallpaper,
     shape: Shape,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.95f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
-        label = "carouselPressScale"
-    )
+  val interactionSource = remember { MutableInteractionSource() }
+  val isPressed by interactionSource.collectIsPressedAsState()
+  val scale by
+      animateFloatAsState(
+          targetValue = if (isPressed) 0.95f else 1f,
+          animationSpec =
+              spring(
+                  dampingRatio = Spring.DampingRatioMediumBouncy,
+                  stiffness = Spring.StiffnessLow,
+              ),
+          label = "carouselPressScale",
+      )
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .graphicsLayer {
+  Box(
+      modifier =
+          modifier
+              .fillMaxSize()
+              .graphicsLayer {
                 scaleX = scale
                 scaleY = scale
-            }
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = onClick
-            )
-            .background(MaterialTheme.colorScheme.surfaceContainer)
-    ) {
-        AsyncImage(
-            model = wallpaper.assetPath,
-            contentDescription = wallpaper.name,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+              }
+              .clickable(
+                  interactionSource = interactionSource,
+                  indication = null,
+                  onClick = onClick,
+              )
+              .background(MaterialTheme.colorScheme.surfaceContainer)
+  ) {
+    AsyncImage(
+        model = wallpaper.assetPath,
+        contentDescription = wallpaper.name,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.fillMaxSize(),
+    )
 
-        // Subtle vignette gradient overlay at bottom
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
+    // Subtle vignette gradient overlay at bottom
+    Box(
+        modifier =
+            Modifier.fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color.Black.copy(alpha = 0.20f),
-                            Color.Black.copy(alpha = 0.85f)
-                        ),
-                        startY = 60f
+                        colors =
+                            listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.20f),
+                                Color.Black.copy(alpha = 0.85f),
+                            ),
+                        startY = 60f,
                     )
                 )
-        )
+    )
 
-        // Bottom text overlay, gracefully clipped as the item transitions to edge peek pill
-        Text(
-            text = wallpaper.name,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold,
-            fontSize = 13.sp,
-            color = Color.White,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(horizontal = 12.dp, vertical = 10.dp)
-        )
-    }
+    // Bottom text overlay, gracefully clipped as the item transitions to edge peek pill
+    Text(
+        text = wallpaper.name,
+        style = MaterialTheme.typography.labelMedium,
+        fontWeight = FontWeight.Bold,
+        fontSize = 13.sp,
+        color = Color.White,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier =
+            Modifier.align(Alignment.BottomStart).padding(horizontal = 12.dp, vertical = 10.dp),
+    )
+  }
 }

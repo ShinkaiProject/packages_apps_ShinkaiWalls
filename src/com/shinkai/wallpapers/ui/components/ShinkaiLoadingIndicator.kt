@@ -23,7 +23,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * Material 3 Expressive Scallop Loading Indicator (Circle background with rotating & pulsing scallop).
+ * Material 3 Expressive Scallop Loading Indicator (Circle background with rotating & pulsing
+ * scallop).
  */
 @Composable
 fun ShinkaiLoadingIndicator(
@@ -32,47 +33,48 @@ fun ShinkaiLoadingIndicator(
     containerColor: Color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
     indicatorColor: Color = MaterialTheme.colorScheme.primary,
 ) {
-    val indicatorSize = size * 0.62f
+  val indicatorSize = size * 0.62f
 
-    val infiniteTransition = rememberInfiniteTransition(label = "loadingTransition")
-    val rotation by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2800, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "rotation"
-    )
+  val infiniteTransition = rememberInfiniteTransition(label = "loadingTransition")
+  val rotation by
+      infiniteTransition.animateFloat(
+          initialValue = 0f,
+          targetValue = 360f,
+          animationSpec =
+              infiniteRepeatable(
+                  animation = tween(2800, easing = LinearEasing),
+                  repeatMode = RepeatMode.Restart,
+              ),
+          label = "rotation",
+      )
 
-    val scaleFactor by infiniteTransition.animateFloat(
-        initialValue = 0.90f,
-        targetValue = 1.08f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1400, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "scale"
-    )
+  val scaleFactor by
+      infiniteTransition.animateFloat(
+          initialValue = 0.90f,
+          targetValue = 1.08f,
+          animationSpec =
+              infiniteRepeatable(
+                  animation = tween(1400, easing = FastOutSlowInEasing),
+                  repeatMode = RepeatMode.Reverse,
+              ),
+          label = "scale",
+      )
 
+  Box(
+      modifier = modifier.size(size).clip(CircleShape).background(containerColor),
+      contentAlignment = Alignment.Center,
+  ) {
     Box(
-        modifier = modifier
-            .size(size)
-            .clip(CircleShape)
-            .background(containerColor),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .size(indicatorSize)
+        modifier =
+            Modifier.size(indicatorSize)
                 .graphicsLayer {
-                    rotationZ = rotation
-                    scaleX = scaleFactor
-                    scaleY = scaleFactor
-                    clip = true
-                    shape = ScallopShape
+                  rotationZ = rotation
+                  scaleX = scaleFactor
+                  scaleY = scaleFactor
+                  clip = true
+                  shape = ScallopShape
                 }
                 .background(indicatorColor)
-        )
-    }
+    )
+  }
 }

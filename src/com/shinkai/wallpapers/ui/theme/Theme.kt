@@ -11,26 +11,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 /**
- * Pure dynamic Material 3 theme that automatically derives colors from the user's
- * active system wallpaper (Monet) on Android 12+ (API 31+).
+ * Pure dynamic Material 3 theme that automatically derives colors from the user's active system
+ * wallpaper (Monet) on Android 12+ (API 31+).
  */
 @Composable
 fun ShinkaiTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
-    val context = LocalContext.current
-    val colorScheme = when {
+  val context = LocalContext.current
+  val colorScheme =
+      when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+          if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
         darkTheme -> darkColorScheme()
         else -> lightColorScheme()
-    }
+      }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = ShinkaiTypography,
-        content = content
-    )
+  MaterialTheme(
+      colorScheme = colorScheme,
+      typography = ShinkaiTypography,
+      content = content,
+  )
 }

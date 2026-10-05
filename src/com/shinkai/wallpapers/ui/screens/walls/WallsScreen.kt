@@ -37,131 +37,127 @@ import com.shinkai.wallpapers.data.model.WallCategory
 import com.shinkai.wallpapers.ui.components.WallCategoryCard
 
 // Portrait aspect ratios for taller, authentic Pinterest masonry previews
-private val CategoryMasonryAspectRatios = listOf(
-    0.68f, // Tall portrait
-    0.80f, // Balanced portrait
-    0.72f, // Medium portrait
-    0.85f, // Compact portrait
-    0.65f, // Extra tall portrait
-    0.76f  // Standard portrait
-)
+private val CategoryMasonryAspectRatios =
+    listOf(
+        0.68f, // Tall portrait
+        0.80f, // Balanced portrait
+        0.72f, // Medium portrait
+        0.85f, // Compact portrait
+        0.65f, // Extra tall portrait
+        0.76f, // Standard portrait
+    )
 
 @Composable
 fun WallsScreen(
     onCategoryClick: (WallCategory) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: WallsViewModel = viewModel()
+    viewModel: WallsViewModel = viewModel(),
 ) {
-    val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        viewModel.loadCategories(context)
-    }
+  val context = LocalContext.current
+  LaunchedEffect(Unit) {
+    viewModel.loadCategories(context)
+  }
 
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    WallsScreenContent(
-        uiState = uiState,
-        onCategoryClick = onCategoryClick,
-        modifier = modifier
-    )
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  WallsScreenContent(
+      uiState = uiState,
+      onCategoryClick = onCategoryClick,
+      modifier = modifier,
+  )
 }
 
 @Composable
 fun WallsScreenContent(
     uiState: WallsUiState,
     onCategoryClick: (WallCategory) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceContainer)
-    ) {
-        // --- 1. TOP PINNED HEADER (Backdrop layer ala Auriya) ---
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
+  Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceContainer)) {
+    // --- 1. TOP PINNED HEADER (Backdrop layer ala Auriya) ---
+    Row(
+        modifier =
+            Modifier.fillMaxWidth()
                 .statusBarsPadding()
                 .padding(start = 22.dp, end = 20.dp, top = 8.dp, bottom = 14.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = stringResource(R.string.walls_title),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 28.sp,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = stringResource(R.string.walls_subtitle),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
-        // --- 2. FOREGROUND STACKED CARD SHEET ---
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
-            color = MaterialTheme.colorScheme.surfaceContainerLowest,
-            shadowElevation = 8.dp
-        ) {
-            when (uiState) {
-                is WallsUiState.Loading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
-                is WallsUiState.Success -> {
-                    if (uiState.categories.isEmpty()) {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text(
-                                text = stringResource(R.string.walls_empty),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                    } else {
-                        LazyVerticalStaggeredGrid(
-                            columns = StaggeredGridCells.Fixed(2),
-                            contentPadding = PaddingValues(
-                                start = 12.dp,
-                                end = 12.dp,
-                                top = 16.dp,
-                                bottom = 100.dp
-                            ),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                            verticalItemSpacing = 10.dp,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            itemsIndexed(
-                                items = uiState.categories,
-                                key = { _, category -> category.id }
-                            ) { index, category ->
-                                val ratio = CategoryMasonryAspectRatios[index % CategoryMasonryAspectRatios.size]
-                                WallCategoryCard(
-                                    category = category,
-                                    aspectRatio = ratio,
-                                    onClick = { onCategoryClick(category) }
-                                )
-                            }
-                        }
-                    }
-                }
-                is WallsUiState.Error -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(
-                            text = uiState.message,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
-                }
-            }
-        }
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Column {
+        Text(
+            text = stringResource(R.string.walls_title),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            fontSize = 28.sp,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = stringResource(R.string.walls_subtitle),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+      }
     }
+
+    // --- 2. FOREGROUND STACKED CARD SHEET ---
+    Surface(
+        modifier = Modifier.fillMaxWidth().weight(1f),
+        shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        shadowElevation = 8.dp,
+    ) {
+      when (uiState) {
+        is WallsUiState.Loading -> {
+          Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+          }
+        }
+        is WallsUiState.Success -> {
+          if (uiState.categories.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+              Text(
+                  text = stringResource(R.string.walls_empty),
+                  style = MaterialTheme.typography.bodyLarge,
+              )
+            }
+          } else {
+            LazyVerticalStaggeredGrid(
+                columns = StaggeredGridCells.Fixed(2),
+                contentPadding =
+                    PaddingValues(
+                        start = 12.dp,
+                        end = 12.dp,
+                        top = 16.dp,
+                        bottom = 100.dp,
+                    ),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalItemSpacing = 10.dp,
+                modifier = Modifier.fillMaxSize(),
+            ) {
+              itemsIndexed(
+                  items = uiState.categories,
+                  key = { _, category -> category.id },
+              ) { index, category ->
+                val ratio = CategoryMasonryAspectRatios[index % CategoryMasonryAspectRatios.size]
+                WallCategoryCard(
+                    category = category,
+                    aspectRatio = ratio,
+                    onClick = { onCategoryClick(category) },
+                )
+              }
+            }
+          }
+        }
+        is WallsUiState.Error -> {
+          Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(
+                text = uiState.message,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+          }
+        }
+      }
+    }
+  }
 }

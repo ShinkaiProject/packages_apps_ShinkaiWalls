@@ -13,37 +13,41 @@ import kotlinx.coroutines.launch
 
 @Immutable
 sealed interface HomeUiState {
-    data object Loading : HomeUiState
-    data class Success(val wallpapers: List<Wallpaper>, val isRefreshing: Boolean = false) : HomeUiState
-    data class Error(val message: String) : HomeUiState
+  data object Loading : HomeUiState
+
+  data class Success(val wallpapers: List<Wallpaper>, val isRefreshing: Boolean = false) :
+      HomeUiState
+
+  data class Error(val message: String) : HomeUiState
 }
 
 class HomeViewModel : ViewModel() {
 
-    private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
-    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+  private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
+  val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-    init {
-        loadWallpapers(forceRefresh = false)
-    }
+  init {
+    loadWallpapers(forceRefresh = false)
+  }
 
-    fun refresh() {
-        val current = _uiState.value
-        if (current is HomeUiState.Success) {
-            _uiState.value = current.copy(isRefreshing = true)
-        }
-        loadWallpapers(forceRefresh = true)
+  fun refresh() {
+    val current = _uiState.value
+    if (current is HomeUiState.Success) {
+      _uiState.value = current.copy(isRefreshing = true)
     }
+    loadWallpapers(forceRefresh = true)
+  }
 
-    private fun loadWallpapers(forceRefresh: Boolean) {
-        viewModelScope.launch {
-            try {
-                val library = WallpaperRepository.load(forceRefresh = forceRefresh)
-                val homeWalls = WallCategories.wallpapersIn(library, WallCategories.DEFAULT_HOME_CATEGORY_ID)
-                _uiState.value = HomeUiState.Success(homeWalls, isRefreshing = false)
-            } catch (e: Exception) {
-                _uiState.value = HomeUiState.Error(e.localizedMessage ?: "Failed to load wallpapers")
-            }
-        }
+  private fun loadWallpapers(forceRefresh: Boolean) {
+    viewModelScope.launch {
+      try {
+        val library = WallpaperRepository.load(forceRefresh = forceRefresh)
+        val homeWalls =
+            WallCategories.wallpapersIn(library, WallCategories.DEFAULT_HOME_CATEGORY_ID)
+        _uiState.value = HomeUiState.Success(homeWalls, isRefreshing = false)
+      } catch (e: Exception) {
+        _uiState.value = HomeUiState.Error(e.localizedMessage ?: "Failed to load wallpapers")
+      }
     }
+  }
 }

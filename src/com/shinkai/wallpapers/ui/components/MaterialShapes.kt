@@ -25,98 +25,92 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-/**
- * 12-lobed smooth scallop / flower shape matching Material 3 Expressive standards.
- */
+/** 12-lobed smooth scallop / flower shape matching Material 3 Expressive standards. */
 class Scallop12Shape(
     private val lobes: Int = 12,
-    private val depth: Float = 0.08f
+    private val depth: Float = 0.08f,
 ) : Shape {
-    override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density
-    ): Outline {
-        val path = Path()
-        val cx = size.width / 2f
-        val cy = size.height / 2f
-        val radius = minOf(cx, cy)
-        val steps = 96
+  override fun createOutline(
+      size: Size,
+      layoutDirection: LayoutDirection,
+      density: Density,
+  ): Outline {
+    val path = Path()
+    val cx = size.width / 2f
+    val cy = size.height / 2f
+    val radius = minOf(cx, cy)
+    val steps = 96
 
-        for (i in 0 until steps) {
-            val theta = (i.toFloat() / steps) * (2f * PI.toFloat())
-            val r = radius * (1f - depth + depth * cos(lobes * theta))
-            val x = cx + r * cos(theta)
-            val y = cy + r * sin(theta)
+    for (i in 0 until steps) {
+      val theta = (i.toFloat() / steps) * (2f * PI.toFloat())
+      val r = radius * (1f - depth + depth * cos(lobes * theta))
+      val x = cx + r * cos(theta)
+      val y = cy + r * sin(theta)
 
-            if (i == 0) {
-                path.moveTo(x, y)
-            } else {
-                path.lineTo(x, y)
-            }
-        }
-        path.close()
-        return Outline.Generic(path)
+      if (i == 0) {
+        path.moveTo(x, y)
+      } else {
+        path.lineTo(x, y)
+      }
     }
+    path.close()
+    return Outline.Generic(path)
+  }
 }
 
 val ScallopShape: Shape = Scallop12Shape()
 
-/**
- * Asymmetrical organic rounded card shape (M3 Expressive).
- */
+/** Asymmetrical organic rounded card shape (M3 Expressive). */
 fun asymmetricCardShape(
     large: Dp = 28.dp,
     small: Dp = 12.dp,
-    flipped: Boolean = false
+    flipped: Boolean = false,
 ): RoundedCornerShape {
-    return if (!flipped) {
-        RoundedCornerShape(
-            topStart = large,
-            topEnd = small,
-            bottomStart = small,
-            bottomEnd = large
-        )
-    } else {
-        RoundedCornerShape(
-            topStart = small,
-            topEnd = large,
-            bottomStart = large,
-            bottomEnd = small
-        )
-    }
+  return if (!flipped) {
+    RoundedCornerShape(
+        topStart = large,
+        topEnd = small,
+        bottomStart = small,
+        bottomEnd = large,
+    )
+  } else {
+    RoundedCornerShape(
+        topStart = small,
+        topEnd = large,
+        bottomStart = large,
+        bottomEnd = small,
+    )
+  }
 }
 
-/**
- * Tactile spring press scale animation modifier.
- */
+/** Tactile spring press scale animation modifier. */
 @Composable
 fun Modifier.tactilePress(
     targetScale: Float = 0.96f,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ): Modifier {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val scale = remember { Animatable(1f) }
+  val interactionSource = remember { MutableInteractionSource() }
+  val isPressed by interactionSource.collectIsPressedAsState()
+  val scale = remember { Animatable(1f) }
 
-    LaunchedEffect(isPressed) {
-        scale.animateTo(
-            targetValue = if (isPressed) targetScale else 1f,
-            animationSpec = spring(
+  LaunchedEffect(isPressed) {
+    scale.animateTo(
+        targetValue = if (isPressed) targetScale else 1f,
+        animationSpec =
+            spring(
                 dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessMedium
-            )
-        )
-    }
+                stiffness = Spring.StiffnessMedium,
+            ),
+    )
+  }
 
-    return this
-        .graphicsLayer {
-            scaleX = scale.value
-            scaleY = scale.value
-        }
-        .clickable(
-            interactionSource = interactionSource,
-            indication = androidx.compose.material3.ripple(bounded = true),
-            onClick = onClick
-        )
+  return this.graphicsLayer {
+        scaleX = scale.value
+        scaleY = scale.value
+      }
+      .clickable(
+          interactionSource = interactionSource,
+          indication = androidx.compose.material3.ripple(bounded = true),
+          onClick = onClick,
+      )
 }

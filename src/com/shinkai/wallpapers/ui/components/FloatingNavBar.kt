@@ -30,63 +30,66 @@ import com.shinkai.wallpapers.ui.navigation.TopLevelDestination
 fun FloatingNavBar(
     currentDestination: TopLevelDestination,
     onSelect: (TopLevelDestination) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .navigationBarsPadding()
-            .padding(bottom = 16.dp),
-        contentAlignment = Alignment.Center
+  Box(
+      modifier = modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = 16.dp),
+      contentAlignment = Alignment.Center,
+  ) {
+    Surface(
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        tonalElevation = 6.dp,
+        shadowElevation = 8.dp,
     ) {
-        Surface(
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            tonalElevation = 6.dp,
-            shadowElevation = 8.dp
-        ) {
-            Row(
-                modifier = Modifier.padding(6.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TopLevelDestination.entries.forEach { destination ->
-                    val selected = destination == currentDestination
-                    val bg by animateColorAsState(
-                        targetValue = if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
-                        label = "pill_bg"
-                    )
-                    val contentColor by animateColorAsState(
-                        targetValue = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
-                        label = "pill_color"
-                    )
+      Row(
+          modifier = Modifier.padding(6.dp),
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          verticalAlignment = Alignment.CenterVertically,
+      ) {
+        TopLevelDestination.entries.forEach { destination ->
+          val selected = destination == currentDestination
+          val bg by
+              animateColorAsState(
+                  targetValue =
+                      if (selected) MaterialTheme.colorScheme.primaryContainer
+                      else Color.Transparent,
+                  label = "pill_bg",
+              )
+          val contentColor by
+              animateColorAsState(
+                  targetValue =
+                      if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+                      else MaterialTheme.colorScheme.onSurfaceVariant,
+                  label = "pill_color",
+              )
 
-                    Row(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(bg)
-                            .clickable { onSelect(destination) }
-                            .padding(horizontal = 16.dp, vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Icon(
-                            imageVector = destination.icon,
-                            contentDescription = stringResource(destination.titleRes),
-                            tint = contentColor,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        if (selected) {
-                            Text(
-                                text = stringResource(destination.titleRes),
-                                style = MaterialTheme.typography.labelLarge,
-                                fontWeight = FontWeight.SemiBold,
-                                color = contentColor
-                            )
-                        }
-                    }
-                }
+          Row(
+              modifier =
+                  Modifier.clip(CircleShape)
+                      .background(bg)
+                      .clickable { onSelect(destination) }
+                      .padding(horizontal = 16.dp, vertical = 10.dp),
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(6.dp),
+          ) {
+            Icon(
+                imageVector = destination.icon,
+                contentDescription = stringResource(destination.titleRes),
+                tint = contentColor,
+                modifier = Modifier.size(20.dp),
+            )
+            if (selected) {
+              Text(
+                  text = stringResource(destination.titleRes),
+                  style = MaterialTheme.typography.labelLarge,
+                  fontWeight = FontWeight.SemiBold,
+                  color = contentColor,
+              )
             }
+          }
         }
+      }
     }
+  }
 }
