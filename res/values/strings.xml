@@ -3,15 +3,15 @@
 
     <!-- Navigation -->
     <string name="nav_home">Home</string>
-    <string name="nav_walls">Walls</string>
+    <string name="nav_walls">Collections</string>
 
     <!-- Header -->
     <string name="home_subtitle">Curated wallpapers &amp; collections</string>
-    <string name="walls_subtitle">Explore collections by category</string>
+    <string name="walls_subtitle">Curated sets &amp; themed categories</string>
 
     <!-- Wall Categories -->
     <string name="home_title">Choose your Wall</string>
-    <string name="walls_title">Walls</string>
+    <string name="walls_title">Collections</string>
     <string name="walls_empty">No categories available yet.</string>
     <string name="category_empty">No wallpapers in this category yet.</string>
     <string name="category_card_description">%1$s, %2$s</string>

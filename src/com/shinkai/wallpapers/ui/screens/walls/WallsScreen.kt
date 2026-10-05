@@ -12,9 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +35,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.shinkai.wallpapers.R
 import com.shinkai.wallpapers.data.model.WallCategory
 import com.shinkai.wallpapers.ui.components.WallCategoryCard
+
+// Portrait aspect ratios for taller, authentic Pinterest masonry previews
+private val CategoryMasonryAspectRatios = listOf(
+    0.68f, // Tall portrait
+    0.80f, // Balanced portrait
+    0.72f, // Medium portrait
+    0.85f, // Compact portrait
+    0.65f, // Extra tall portrait
+    0.76f  // Standard portrait
+)
 
 @Composable
 fun WallsScreen(
@@ -116,16 +126,26 @@ fun WallsScreenContent(
                             )
                         }
                     } else {
-                        LazyVerticalGrid(
-                            columns = GridCells.Adaptive(160.dp),
-                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 100.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                        LazyVerticalStaggeredGrid(
+                            columns = StaggeredGridCells.Fixed(2),
+                            contentPadding = PaddingValues(
+                                start = 12.dp,
+                                end = 12.dp,
+                                top = 16.dp,
+                                bottom = 100.dp
+                            ),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            verticalItemSpacing = 10.dp,
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            items(uiState.categories, key = { it.id }) { category ->
+                            itemsIndexed(
+                                items = uiState.categories,
+                                key = { _, category -> category.id }
+                            ) { index, category ->
+                                val ratio = CategoryMasonryAspectRatios[index % CategoryMasonryAspectRatios.size]
                                 WallCategoryCard(
                                     category = category,
+                                    aspectRatio = ratio,
                                     onClick = { onCategoryClick(category) }
                                 )
                             }

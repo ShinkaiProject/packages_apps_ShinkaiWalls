@@ -56,15 +56,14 @@ import com.shinkai.wallpapers.ui.components.AsyncImage
 import com.shinkai.wallpapers.ui.components.ShinkaiLoadingIndicator
 import com.shinkai.wallpapers.ui.components.tactilePress
 
-// Varied Pinterest aspect ratios for an authentic staggered layout
+// Varied portrait Pinterest aspect ratios for taller, authentic wallpaper previews
 private val PINTEREST_ASPECT_RATIOS = listOf(
-    0.62f, // Tall portrait
-    1.15f, // Compact / Wide
-    0.75f, // Medium portrait
-    0.68f, // Tall
-    1.25f, // Wide landscape
-    0.80f, // Balanced portrait
-    0.58f  // Extra tall portrait
+    0.60f, // Tall portrait
+    0.72f, // Balanced portrait
+    0.65f, // Medium tall portrait
+    0.78f, // Compact portrait
+    0.58f, // Extra tall portrait
+    0.70f  // Standard portrait
 )
 
 @Composable
