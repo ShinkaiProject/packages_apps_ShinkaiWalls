@@ -30,6 +30,11 @@ object WallCategories {
             "lumina-walls",
             R.string.category_lumina_walls,
             "Lumina-Walls"
+        ),
+        WallCategoryDefinition(
+            "Neon-Orbs-walls",
+            R.string.category_neon_orbs_walls,
+            "Neon-Orbs-Walls"
         )
     )
 

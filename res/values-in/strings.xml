@@ -18,6 +18,7 @@
     <string name="category_pixel_walls">Pixel Walls</string>
     <string name="category_anime_walls">Anime Walls</string>
     <string name="category_lumina_walls">Lumina Walls</string>
+    <string name="category_neon_orbs_walls">Neon Orbs Walls</string>
 
     <!-- Errors -->
     <string name="error_network">Gagal memuat data dari internet</string>
