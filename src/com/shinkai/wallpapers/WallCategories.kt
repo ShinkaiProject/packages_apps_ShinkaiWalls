@@ -17,9 +17,9 @@ object WallCategories {
 
     val definitions: List<WallCategoryDefinition> = listOf(
         WallCategoryDefinition(
-            "anime-walls",
-            R.string.category_anime_walls,
-            "Anime-Walls"
+            "yaemiko-walls",
+            R.string.category_yaemiko_walls,
+            "Yaemiko-Walls"
         ),
         WallCategoryDefinition(
             DEFAULT_HOME_CATEGORY_ID,
@@ -35,6 +35,11 @@ object WallCategories {
             "Neon-Orbs-walls",
             R.string.category_neon_orbs_walls,
             "Neon-Orbs-Walls"
+        ),
+        WallCategoryDefinition(
+            "elysia-walls",
+            R.string.category_elysia_walls,
+            "Elysia-Walls"
         )
     )
 
