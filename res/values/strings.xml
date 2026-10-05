@@ -5,6 +5,10 @@
     <string name="nav_home">Home</string>
     <string name="nav_walls">Walls</string>
 
+    <!-- Header -->
+    <string name="home_subtitle">Curated wallpapers &amp; collections</string>
+    <string name="walls_subtitle">Explore collections by category</string>
+
     <!-- Wall Categories -->
     <string name="home_title">Choose your Wall</string>
     <string name="walls_title">Walls</string>
