@@ -3,11 +3,19 @@
 
     <!-- Navigation -->
     <string name="nav_home">Beranda</string>
-    <string name="nav_walls">Dinding</string>
+    <string name="nav_walls">Koleksi</string>
+
+    <!-- Header & Sections -->
+    <string name="home_subtitle">Koleksi &amp; pilihan wallpaper terbaik</string>
+    <string name="home_spotlight_title">Sorotan</string>
+    <string name="home_spotlight_subtitle">Pilihan editor terkurasi</string>
+    <string name="home_explore_title">Jelajahi</string>
+    <string name="home_explore_subtitle">Semua koleksi wallpaper</string>
+    <string name="walls_subtitle">Pilihan set &amp; kategori bertema</string>
 
     <!-- Wall Categories -->
     <string name="home_title">Pilih Wallpaper Anda</string>
-    <string name="walls_title">Dinding</string>
+    <string name="walls_title">Koleksi</string>
     <string name="walls_empty">Belum ada kategori.</string>
     <string name="category_empty">Belum ada wallpaper di kategori ini.</string>
     <string name="category_card_description">%1$s, %2$s</string>

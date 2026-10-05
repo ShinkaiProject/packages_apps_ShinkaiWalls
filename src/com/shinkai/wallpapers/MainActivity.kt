@@ -53,7 +53,11 @@ fun ShinkaiApp() {
         when (val screen = currentScreen) {
             is Screen.Home -> {
                 HomeScreen(
-                    onWallpaperClick = { wp -> currentScreen = Screen.Preview(wp) }
+                    onWallpaperClick = { wp -> currentScreen = Screen.Preview(wp) },
+                    onMoreWallpapersClick = {
+                        currentTab = TopLevelDestination.WALLS
+                        currentScreen = Screen.Walls
+                    }
                 )
             }
             is Screen.Walls -> {

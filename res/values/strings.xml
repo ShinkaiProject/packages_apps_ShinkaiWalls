@@ -7,6 +7,10 @@
 
     <!-- Header -->
     <string name="home_subtitle">Curated wallpapers &amp; collections</string>
+    <string name="home_spotlight_title">Spotlight</string>
+    <string name="home_spotlight_subtitle">Curated editorial highlights</string>
+    <string name="home_explore_title">Explore</string>
+    <string name="home_explore_subtitle">All curated wallpapers</string>
     <string name="walls_subtitle">Curated sets &amp; themed categories</string>
 
     <!-- Wall Categories -->

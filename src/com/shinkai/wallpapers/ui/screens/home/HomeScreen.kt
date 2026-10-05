@@ -1,6 +1,12 @@
 package com.shinkai.wallpapers.ui.screens.home
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,14 +20,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed as lazyRowItemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.MoreHoriz
+import androidx.compose.material.icons.rounded.Wallpaper
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,16 +48,24 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,7 +74,8 @@ import com.shinkai.wallpapers.R
 import com.shinkai.wallpapers.data.model.Wallpaper
 import com.shinkai.wallpapers.ui.components.AsyncImage
 import com.shinkai.wallpapers.ui.components.ShinkaiLoadingIndicator
-import com.shinkai.wallpapers.ui.components.tactilePress
+import com.shinkai.wallpapers.ui.components.WallpaperExpressiveCarousel
+import kotlinx.coroutines.delay
 
 // Varied portrait Pinterest aspect ratios for taller, authentic wallpaper previews
 private val PINTEREST_ASPECT_RATIOS = listOf(
@@ -66,9 +87,12 @@ private val PINTEREST_ASPECT_RATIOS = listOf(
     0.70f  // Standard portrait
 )
 
+
+
 @Composable
 fun HomeScreen(
     onWallpaperClick: (Wallpaper) -> Unit,
+    onMoreWallpapersClick: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel()
 ) {
@@ -77,6 +101,7 @@ fun HomeScreen(
         uiState = uiState,
         onRefresh = viewModel::refresh,
         onWallpaperClick = onWallpaperClick,
+        onMoreWallpapersClick = onMoreWallpapersClick,
         modifier = modifier
     )
 }
@@ -87,6 +112,7 @@ fun HomeScreenContent(
     uiState: HomeUiState,
     onRefresh: () -> Unit,
     onWallpaperClick: (Wallpaper) -> Unit,
+    onMoreWallpapersClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val isRefreshing = (uiState as? HomeUiState.Success)?.isRefreshing ?: (uiState is HomeUiState.Loading)
@@ -207,8 +233,8 @@ fun HomeScreenContent(
                         LazyVerticalStaggeredGrid(
                             columns = StaggeredGridCells.Fixed(2),
                             contentPadding = PaddingValues(
-                                start = 12.dp,
-                                end = 12.dp,
+                                start = 14.dp,
+                                end = 14.dp,
                                 top = 16.dp,
                                 bottom = 100.dp
                             ),
@@ -216,7 +242,70 @@ fun HomeScreenContent(
                             horizontalArrangement = Arrangement.spacedBy(10.dp),
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            // Pinterest Staggered Masonry Items
+                            if (wallpapers.isNotEmpty()) {
+                                // --- 1. SPOTLIGHT SECTION TITLE & SUBTITLE ---
+                                item(span = StaggeredGridItemSpan.FullLine) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 4.dp, end = 4.dp, top = 2.dp, bottom = 10.dp)
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.home_spotlight_title),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Text(
+                                            text = stringResource(R.string.home_spotlight_subtitle),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+
+                                // --- 2. SPOTLIGHT MATERIAL 3 EXPRESSIVE CAROUSEL ---
+                                item(span = StaggeredGridItemSpan.FullLine) {
+                                    WallpaperExpressiveCarousel(
+                                        wallpapers = wallpapers,
+                                        onWallpaperClick = onWallpaperClick,
+                                        preferredItemWidth = 186.dp,
+                                        itemHeight = 154.dp,
+                                        itemSpacing = 10.dp,
+                                        contentPadding = PaddingValues(horizontal = 2.dp),
+                                        shape = RoundedCornerShape(26.dp),
+                                        autoScroll = true,
+                                        autoScrollIntervalMs = 3500L
+                                    )
+                                }
+
+                                // --- 3. EXPLORE SECTION TITLE & SUBTITLE ---
+                                item(span = StaggeredGridItemSpan.FullLine) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 4.dp, end = 4.dp, top = 18.dp, bottom = 4.dp)
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.home_explore_title),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Text(
+                                            text = stringResource(R.string.home_explore_subtitle),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            }
+
+                            // --- 4. MAIN SECTION: Pinterest Staggered Masonry Items ---
                             itemsIndexed(
                                 items = wallpapers,
                                 key = { _, item -> item.assetPath }
@@ -246,48 +335,71 @@ fun HomeScreenContent(
     }
 }
 
+/**
+ * Pinterest Masonry Pin Card with tactile press feedback.
+ */
 @Composable
 private fun PinterestWallpaperCard(
     wallpaper: Wallpaper,
     aspectRatio: Float,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit
 ) {
+    var isPressed by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.95f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "pinScale"
+    )
+
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
-            .tactilePress(onClick = onClick)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(aspectRatio),
+                .aspectRatio(aspectRatio)
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onPress = {
+                            isPressed = true
+                            tryAwaitRelease()
+                            isPressed = false
+                        },
+                        onTap = { onClick() }
+                    )
+                },
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                AsyncImage(
-                    model = wallpaper.assetPath,
-                    contentDescription = wallpaper.name,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+            AsyncImage(
+                model = wallpaper.assetPath,
+                contentDescription = wallpaper.name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
         }
 
-        // Pinterest style bottom title row with More icon
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 6.dp, start = 4.dp, end = 2.dp, bottom = 4.dp),
+                .padding(horizontal = 4.dp, vertical = 6.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = wallpaper.name,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
@@ -297,9 +409,9 @@ private fun PinterestWallpaperCard(
 
             Icon(
                 imageVector = Icons.Rounded.MoreHoriz,
-                contentDescription = null,
+                contentDescription = "More",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(18.dp)
             )
         }
     }
