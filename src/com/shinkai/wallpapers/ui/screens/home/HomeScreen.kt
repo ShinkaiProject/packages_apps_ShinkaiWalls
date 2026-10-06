@@ -215,7 +215,7 @@ fun HomeScreenContent(
                                     start = 14.dp,
                                     end = 14.dp,
                                     top = 16.dp,
-                                    bottom = 100.dp,
+                                    bottom = 120.dp,
                                 ),
                             verticalItemSpacing = 12.dp,
                             horizontalArrangement = Arrangement.spacedBy(10.dp),

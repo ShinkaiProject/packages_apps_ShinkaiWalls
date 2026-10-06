@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.shinkai.wallpapers.ui.navigation.TopLevelDestination
 
 @Composable
@@ -33,17 +34,17 @@ fun FloatingNavBar(
     modifier: Modifier = Modifier,
 ) {
   Box(
-      modifier = modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = 16.dp),
+      modifier = modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = 20.dp),
       contentAlignment = Alignment.Center,
   ) {
     Surface(
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         tonalElevation = 6.dp,
-        shadowElevation = 8.dp,
+        shadowElevation = 10.dp,
     ) {
       Row(
-          modifier = Modifier.padding(6.dp),
+          modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
           horizontalArrangement = Arrangement.spacedBy(8.dp),
           verticalAlignment = Alignment.CenterVertically,
       ) {
@@ -69,21 +70,25 @@ fun FloatingNavBar(
                   Modifier.clip(CircleShape)
                       .background(bg)
                       .clickable { onSelect(destination) }
-                      .padding(horizontal = 16.dp, vertical = 10.dp),
+                      .padding(
+                          horizontal = if (selected) 22.dp else 18.dp,
+                          vertical = 14.dp,
+                      ),
               verticalAlignment = Alignment.CenterVertically,
-              horizontalArrangement = Arrangement.spacedBy(6.dp),
+              horizontalArrangement = Arrangement.spacedBy(8.dp),
           ) {
             Icon(
                 imageVector = destination.icon,
                 contentDescription = stringResource(destination.titleRes),
                 tint = contentColor,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(24.dp),
             )
             if (selected) {
               Text(
                   text = stringResource(destination.titleRes),
-                  style = MaterialTheme.typography.labelLarge,
-                  fontWeight = FontWeight.SemiBold,
+                  style = MaterialTheme.typography.titleSmall,
+                  fontWeight = FontWeight.Bold,
+                  fontSize = 15.sp,
                   color = contentColor,
               )
             }

@@ -128,7 +128,7 @@ fun WallsScreenContent(
                                     start = 12.dp,
                                     end = 12.dp,
                                     top = 16.dp,
-                                    bottom = 100.dp,
+                                    bottom = 120.dp,
                                 ),
                             horizontalArrangement = Arrangement.spacedBy(10.dp),
                             verticalItemSpacing = 10.dp,
