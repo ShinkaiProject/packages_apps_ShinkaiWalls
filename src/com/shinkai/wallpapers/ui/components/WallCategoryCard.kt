@@ -75,7 +75,7 @@ fun WallCategoryCard(
                 )
               },
       shape = RoundedCornerShape(22.dp),
-      colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+      colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
       elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
   ) {
     Box(modifier = Modifier.fillMaxSize()) {

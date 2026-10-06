@@ -5,49 +5,25 @@ import android.content.Context
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.shinkai.wallpapers.R
 import com.shinkai.wallpapers.data.model.Wallpaper
-import com.shinkai.wallpapers.ui.components.AsyncImage
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
@@ -55,135 +31,87 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Preview Screen: Composes dedicated reusable components:
+ * - [PreviewTopBar] for top navigation & info
+ * - [WallpaperPreviewCanvas] for the center floating phone preview
+ * - [PreviewApplyBar] for bottom action button
+ * - [ApplyWallpaperBottomSheet] for destination selection popup
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreviewScreen(
     wallpaper: Wallpaper,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    @Suppress("UNUSED_PARAMETER") wallpaperList: List<Wallpaper> = emptyList(),
 ) {
   val context = LocalContext.current
   val scope = rememberCoroutineScope()
-  var showSheet by remember { mutableStateOf(false) }
+
   var isApplying by remember { mutableStateOf(false) }
-  var applyLock by remember { mutableStateOf(true) }
-  var applyHome by remember { mutableStateOf(true) }
-  val sheetState = rememberModalBottomSheetState()
+  var showApplySheet by remember { mutableStateOf(false) }
+  val applySheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+  var selectedTargetFlag by remember {
+    mutableIntStateOf(WallpaperManager.FLAG_LOCK or WallpaperManager.FLAG_SYSTEM)
+  }
 
   BackHandler(onBack = onBack)
 
-  Box(modifier = modifier.fillMaxSize().background(Color.Black)) {
-    AsyncImage(
-        model = wallpaper.fullUrl.ifEmpty { wallpaper.assetPath },
-        contentDescription = wallpaper.name,
-        contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize(),
+  Column(
+      modifier =
+          modifier
+              .fillMaxSize()
+              .background(MaterialTheme.colorScheme.surfaceContainer)
+              .statusBarsPadding()
+              .navigationBarsPadding(),
+      horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
+    // 1. Top Bar
+    PreviewTopBar(
+        title = wallpaper.name,
+        onBack = onBack,
     )
 
-    IconButton(
-        onClick = onBack,
-        modifier =
-            Modifier.statusBarsPadding()
-                .padding(16.dp)
-                .size(48.dp)
-                .background(Color.Black.copy(alpha = 0.45f), CircleShape),
-    ) {
-      Icon(
-          imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-          contentDescription = "Back",
-          tint = Color.White,
-      )
-    }
+    // 2. Floating Phone Canvas (Center)
+    WallpaperPreviewCanvas(
+        wallpaper = wallpaper,
+        modifier = Modifier.weight(1f),
+    )
 
-    Button(
-        onClick = { showSheet = true },
-        modifier =
-            Modifier.align(Alignment.BottomCenter)
-                .fillMaxWidth(0.85f)
-                .navigationBarsPadding()
-                .padding(bottom = 24.dp)
-                .height(56.dp),
-    ) {
-      Text(stringResource(R.string.preview_apply))
-    }
-
-    if (isApplying) {
-      Box(
-          modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.65f)),
-          contentAlignment = Alignment.Center,
-      ) {
-        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-      }
-    }
+    // 3. Bottom Apply Bar
+    PreviewApplyBar(
+        isApplying = isApplying,
+        onApplyClick = { showApplySheet = true },
+    )
   }
 
-  if (showSheet) {
-    ModalBottomSheet(
-        onDismissRequest = { showSheet = false },
-        sheetState = sheetState,
-    ) {
-      Column(
-          modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(24.dp),
-          verticalArrangement = Arrangement.spacedBy(16.dp),
-      ) {
-        Text(
-            text = stringResource(R.string.preview_apply_question),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-        )
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-          Checkbox(checked = applyLock, onCheckedChange = { applyLock = it })
-          Text(
-              text = stringResource(R.string.preview_lock_screen),
-              modifier = Modifier.padding(start = 8.dp),
-          )
-        }
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-          Checkbox(checked = applyHome, onCheckedChange = { applyHome = it })
-          Text(
-              text = stringResource(R.string.preview_home_screen),
-              modifier = Modifier.padding(start = 8.dp),
-          )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
-        ) {
-          TextButton(onClick = { showSheet = false }) {
-            Text(stringResource(R.string.btn_cancel))
+  // 4. Auriya-Style Apply BottomSheet
+  if (showApplySheet) {
+    ApplyWallpaperBottomSheet(
+        selectedTargetFlag = selectedTargetFlag,
+        sheetState = applySheetState,
+        onDismissRequest = { showApplySheet = false },
+        onSelectTarget = { flag ->
+          selectedTargetFlag = flag
+          showApplySheet = false
+          isApplying = true
+          scope.launch {
+            applyWallpaperToDevice(context, wallpaper, flag)
+            isApplying = false
+            onBack()
           }
-          Button(
-              onClick = {
-                var flag = 0
-                if (applyLock) flag = flag or WallpaperManager.FLAG_LOCK
-                if (applyHome) flag = flag or WallpaperManager.FLAG_SYSTEM
-
-                if (flag == 0) {
-                  Toast.makeText(context, R.string.preview_select_screen, Toast.LENGTH_SHORT).show()
-                  return@Button
-                }
-                showSheet = false
-                isApplying = true
-                scope.launch {
-                  applyWallpaperToDevice(context, wallpaper, flag)
-                  isApplying = false
-                  onBack()
-                }
-              }
-          ) {
-            Text(stringResource(R.string.preview_apply))
-          }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-      }
-    }
+        },
+    )
   }
 }
 
-private suspend fun applyWallpaperToDevice(context: Context, wallpaper: Wallpaper, flag: Int) =
+private suspend fun applyWallpaperToDevice(
+    context: Context,
+    wallpaper: Wallpaper,
+    flag: Int,
+) =
     withContext(Dispatchers.IO) {
       try {
         val safeFileName = "${wallpaper.name.replace(Regex("[^A-Za-z0-9]"), "_")}.jpg"

@@ -129,7 +129,7 @@ private fun WallpaperCarouselItem(
                   indication = null,
                   onClick = onClick,
               )
-              .background(MaterialTheme.colorScheme.surfaceContainer)
+              .background(MaterialTheme.colorScheme.surfaceContainerHigh)
   ) {
     AsyncImage(
         model = wallpaper.assetPath,

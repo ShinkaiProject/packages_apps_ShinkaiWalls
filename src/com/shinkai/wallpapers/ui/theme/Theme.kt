@@ -23,7 +23,24 @@ fun ShinkaiTheme(
   val colorScheme =
       when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-          if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+          val baseScheme =
+              if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+          if (darkTheme) {
+            // Material 3 Expressive brighter, rich tinted dark mode:
+            // Lift surface tones so the stacked cards and surfaces are noticeably brighter
+            baseScheme.copy(
+                surfaceContainerLowest = baseScheme.surfaceContainer,
+                surfaceContainerLow = baseScheme.surfaceContainerHigh,
+                surfaceContainer = baseScheme.surfaceContainerHighest,
+                surfaceContainerHigh = baseScheme.surfaceBright,
+            )
+          } else {
+            // Material 3 Expressive crisp, radiant light mode:
+            // Make the foreground stacked card crisp, clean, and bright
+            baseScheme.copy(
+                surfaceContainer = baseScheme.surfaceContainerLowest,
+            )
+          }
         }
         darkTheme -> darkColorScheme()
         else -> lightColorScheme()
