@@ -2,3 +2,15 @@
 build/
 src/main/jniLibs/
 rust/target/
+local.properties
+
+# Local Gradle tooling
+build.gradle*
+settings.gradle*
+gradle.properties
+gradlew*
+gradle/
+
+# Local scripts & test harnesses
+*.sh
+test/

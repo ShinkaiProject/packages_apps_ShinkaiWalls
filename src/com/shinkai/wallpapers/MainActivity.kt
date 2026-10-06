@@ -1,104 +1,98 @@
 package com.shinkai.wallpapers
 
 import android.os.Bundle
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.color.DynamicColors
-import com.google.android.material.color.MaterialColors
-import kotlinx.coroutines.launch
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import com.shinkai.wallpapers.ui.components.FloatingNavBar
+import com.shinkai.wallpapers.ui.navigation.Screen
+import com.shinkai.wallpapers.ui.navigation.TopLevelDestination
+import com.shinkai.wallpapers.ui.screens.category.CategoryDetailScreen
+import com.shinkai.wallpapers.ui.screens.home.HomeScreen
+import com.shinkai.wallpapers.ui.screens.preview.PreviewScreen
+import com.shinkai.wallpapers.ui.screens.walls.WallsScreen
+import com.shinkai.wallpapers.ui.theme.ShinkaiTheme
 
-class MainActivity : AppCompatActivity() {
-
-    /** Wallpapers listed by Home, which defaults to a single category of the library. */
-    private var homeWallpapers: List<Wallpaper> = listOf()
-    private lateinit var grid: RecyclerView
-    private lateinit var swipeRefresh: SwipeRefreshLayout
-    private lateinit var navBar: FloatingNavigationView
-
-    /**
-     * One shot marker that this Home instance is about to be left for Walls, so the wallpaper
-     * cards replay their rise once it is resumed again. Home is reused through `CLEAR_TOP` and
-     * keeps its adapter, which is why the layout animation has to be requested by hand here
-     * instead of running on its own.
-     */
-    private var replayCardsOnResume = false
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        DynamicColors.applyToActivityIfAvailable(this)
-
+        requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        grid = findViewById(R.id.wallpaper_grid)
-        grid.layoutManager = GridLayoutManager(this, 2)
-        
-        // Optimasi RecyclerView untuk scroll super halus
-        grid.setHasFixedSize(true)
-        grid.setItemViewCacheSize(20)
-
-        swipeRefresh = findViewById(R.id.swipe_refresh)
-        swipeRefresh.setColorSchemeColors(
-            MaterialColors.getColor(swipeRefresh, android.R.attr.colorPrimary)
-        )
-        swipeRefresh.setProgressBackgroundColorSchemeColor(
-            MaterialColors.getColor(swipeRefresh, com.google.android.material.R.attr.colorSurface)
-        )
-        swipeRefresh.setOnRefreshListener {
-            fetchWallpapersOnline()
-        }
-
-        navBar = findViewById(R.id.nav_floating)
-        navBar.setItems(TopLevelDestination.entries)
-        navBar.setOnItemSelectedListener { destination ->
-            if (destination != TopLevelDestination.HOME) {
-                replayCardsOnResume = true
-                openDestination(destination)
+        setContent {
+            ShinkaiTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.surface
+                ) {
+                    ShinkaiApp()
+                }
             }
         }
-
-        fetchWallpapersOnline()
     }
+}
 
-    /**
-     * Being resumed is what makes this the current destination, so the active pill is derived
-     * here instead of from a click. That covers creation, back navigation, `CLEAR_TOP` reuse of
-     * this instance, background returns and configuration changes.
-     */
-    override fun onResume() {
-        super.onResume()
-        navBar.showDestination(TopLevelDestination.HOME)
-        if (replayCardsOnResume) {
-            replayCardsOnResume = false
-            if (homeWallpapers.isNotEmpty()) grid.scheduleLayoutAnimation()
-        }
-    }
+@Composable
+fun ShinkaiApp() {
+    var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
+    var currentTab by remember { mutableStateOf(TopLevelDestination.HOME) }
 
-    private fun fetchWallpapersOnline() {
-        lifecycleScope.launch {
-            try {
-                val library = WallpaperRepository.load(forceRefresh = true)
-                homeWallpapers = WallCategories.wallpapersIn(
-                    library,
-                    WallCategories.DEFAULT_HOME_CATEGORY_ID
+    Box(modifier = Modifier.fillMaxSize()) {
+        when (val screen = currentScreen) {
+            is Screen.Home -> {
+                HomeScreen(
+                    onWallpaperClick = { wp -> currentScreen = Screen.Preview(wp) }
                 )
-                setupAdapter(grid, homeWallpapers)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(this@MainActivity, R.string.error_network, Toast.LENGTH_SHORT).show()
-            } finally {
-                swipeRefresh.isRefreshing = false
+            }
+            is Screen.Walls -> {
+                WallsScreen(
+                    onCategoryClick = { cat -> currentScreen = Screen.CategoryDetail(cat) }
+                )
+            }
+            is Screen.CategoryDetail -> {
+                CategoryDetailScreen(
+                    category = screen.category,
+                    onBack = { currentScreen = Screen.Walls },
+                    onWallpaperClick = { wp -> currentScreen = Screen.Preview(wp) }
+                )
+            }
+            is Screen.Preview -> {
+                PreviewScreen(
+                    wallpaper = screen.wallpaper,
+                    onBack = {
+                        currentScreen = when (currentTab) {
+                            TopLevelDestination.HOME -> Screen.Home
+                            TopLevelDestination.WALLS -> Screen.Walls
+                        }
+                    }
+                )
             }
         }
-    }
 
-    private fun setupAdapter(grid: RecyclerView, list: List<Wallpaper>) {
-        grid.adapter = WallpaperAdapter(list) { wp ->
-            openWallpaperPreview(wp)
+        if (currentScreen is Screen.Home || currentScreen is Screen.Walls) {
+            FloatingNavBar(
+                currentDestination = currentTab,
+                onSelect = { destination ->
+                    currentTab = destination
+                    currentScreen = when (destination) {
+                        TopLevelDestination.HOME -> Screen.Home
+                        TopLevelDestination.WALLS -> Screen.Walls
+                    }
+                },
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
     }
 }

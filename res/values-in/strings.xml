@@ -6,10 +6,14 @@
     <string name="nav_walls">Dinding</string>
 
     <!-- Wall Categories -->
+    <string name="home_title">Pilih Wallpaper Anda</string>
     <string name="walls_title">Dinding</string>
     <string name="walls_empty">Belum ada kategori.</string>
     <string name="category_empty">Belum ada wallpaper di kategori ini.</string>
     <string name="category_card_description">%1$s, %2$s</string>
+    <string name="about_title">Tentang Aplikasi</string>
+    <string name="about_message">Shinkai Walls\n\nDeveloper: Mnskkyy\nDesainer: SheMyWifee\n\nVersi 1.0</string>
+    <string name="about_dismiss">Mantap!</string>
     <plurals name="walls_count">
         <item quantity="other">%d wallpaper</item>
     </plurals>
@@ -26,6 +30,11 @@
     <string name="error_network">Gagal memuat data dari internet</string>
 
     <!-- Preview -->
+    <string name="preview_apply">Terapkan</string>
+    <string name="preview_apply_question">Terapkan wallpaper?</string>
+    <string name="preview_lock_screen">Layar Kunci</string>
+    <string name="preview_home_screen">Layar Utama</string>
+    <string name="btn_cancel">Batal</string>
     <string name="preview_select_screen">Pilih minimal 1 layar!!</string>
     <string name="preview_wallpaper_set">Wallpaper berhasil dipasang.</string>
     <string name="preview_wallpaper_failed">Gagal: %s</string>
