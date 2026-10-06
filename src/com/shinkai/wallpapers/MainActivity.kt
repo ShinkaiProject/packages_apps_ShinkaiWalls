@@ -18,9 +18,11 @@ import androidx.compose.ui.Modifier
 import com.shinkai.wallpapers.ui.components.FloatingNavBar
 import com.shinkai.wallpapers.ui.navigation.Screen
 import com.shinkai.wallpapers.ui.navigation.TopLevelDestination
+import com.shinkai.wallpapers.ui.screens.about.AboutScreen
 import com.shinkai.wallpapers.ui.screens.category.CategoryDetailScreen
 import com.shinkai.wallpapers.ui.screens.home.HomeScreen
 import com.shinkai.wallpapers.ui.screens.preview.PreviewScreen
+import com.shinkai.wallpapers.ui.screens.settings.SettingsScreen
 import com.shinkai.wallpapers.ui.screens.walls.WallsScreen
 import com.shinkai.wallpapers.ui.theme.ShinkaiTheme
 
@@ -58,6 +60,7 @@ fun ShinkaiApp() {
               currentTab = TopLevelDestination.WALLS
               currentScreen = Screen.Walls
             },
+            onSettingsClick = { currentScreen = Screen.Settings },
         )
       }
       is Screen.Walls -> {
@@ -78,13 +81,23 @@ fun ShinkaiApp() {
                   when (currentTab) {
                     TopLevelDestination.HOME -> Screen.Home
                     TopLevelDestination.WALLS -> Screen.Walls
+                    TopLevelDestination.ABOUT -> Screen.About
                   }
             },
         )
       }
+      is Screen.About -> {
+        AboutScreen(onBack = {
+          currentTab = TopLevelDestination.HOME
+          currentScreen = Screen.Home
+        })
+      }
+      is Screen.Settings -> {
+        SettingsScreen(onBack = { currentScreen = Screen.Home })
+      }
     }
 
-    if (currentScreen is Screen.Home || currentScreen is Screen.Walls) {
+    if (currentScreen is Screen.Home || currentScreen is Screen.Walls || currentScreen is Screen.About) {
       FloatingNavBar(
           currentDestination = currentTab,
           onSelect = { destination ->
@@ -93,6 +106,7 @@ fun ShinkaiApp() {
                 when (destination) {
                   TopLevelDestination.HOME -> Screen.Home
                   TopLevelDestination.WALLS -> Screen.Walls
+                  TopLevelDestination.ABOUT -> Screen.About
                 }
           },
           modifier = Modifier.align(Alignment.BottomCenter),

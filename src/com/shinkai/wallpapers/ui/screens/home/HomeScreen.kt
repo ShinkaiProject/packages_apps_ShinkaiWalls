@@ -78,6 +78,7 @@ private val PINTEREST_ASPECT_RATIOS =
 fun HomeScreen(
     onWallpaperClick: (Wallpaper) -> Unit,
     onMoreWallpapersClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(),
 ) {
@@ -87,6 +88,7 @@ fun HomeScreen(
         onRefresh = viewModel::refresh,
         onWallpaperClick = onWallpaperClick,
         onMoreWallpapersClick = onMoreWallpapersClick,
+        onSettingsClick = onSettingsClick,
         modifier = modifier,
     )
 }
@@ -98,36 +100,12 @@ fun HomeScreenContent(
     onRefresh: () -> Unit,
     onWallpaperClick: (Wallpaper) -> Unit,
     onMoreWallpapersClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val isRefreshing =
         (uiState as? HomeUiState.Success)?.isRefreshing ?: (uiState is HomeUiState.Loading)
-    var showAboutDialog by remember { mutableStateOf(false) }
     val pullRefreshState = rememberPullToRefreshState()
-
-    if (showAboutDialog) {
-        AlertDialog(
-            onDismissRequest = { showAboutDialog = false },
-            title = {
-                Text(
-                    text = stringResource(R.string.about_title),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                )
-            },
-            text = {
-                Text(
-                    text = stringResource(R.string.about_message),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = { showAboutDialog = false }) {
-                    Text(stringResource(R.string.about_dismiss))
-                }
-            },
-        )
-    }
 
     Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceContainerLow)) {
         Row(
@@ -155,7 +133,7 @@ fun HomeScreenContent(
             }
 
             FilledIconButton(
-                onClick = { showAboutDialog = true },
+                onClick = onSettingsClick,
                 shape = CircleShape,
                 colors =
                     IconButtonDefaults.filledIconButtonColors(

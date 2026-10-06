@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Category
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.shinkai.wallpapers.R
 import com.shinkai.wallpapers.data.model.WallCategory
@@ -13,16 +14,21 @@ enum class TopLevelDestination(
     val icon: ImageVector,
     @param:StringRes val titleRes: Int,
 ) {
-  HOME(Icons.Rounded.Home, R.string.nav_home),
-  WALLS(Icons.Rounded.Category, R.string.nav_walls),
+    HOME(Icons.Rounded.Home, R.string.nav_home),
+    WALLS(Icons.Rounded.Category, R.string.nav_walls),
+    ABOUT(Icons.Rounded.Info, R.string.nav_about),
 }
 
 sealed interface Screen {
-  data object Home : Screen
+    data object Home : Screen
 
-  data object Walls : Screen
+    data object Walls : Screen
 
-  data class CategoryDetail(val category: WallCategory) : Screen
+    data class CategoryDetail(val category: WallCategory) : Screen
 
-  data class Preview(val wallpaper: Wallpaper) : Screen
+    data class Preview(val wallpaper: Wallpaper) : Screen
+
+    data object About : Screen
+
+    data object Settings : Screen
 }
