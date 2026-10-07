@@ -25,6 +25,101 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
+/** 10-lobed smooth scallop shape matching Material 3 Expressive Loading standards. */
+class Scallop10Shape(
+    private val lobes: Int = 10,
+    private val depth: Float = 0.13f,
+) : Shape {
+  override fun createOutline(
+      size: Size,
+      layoutDirection: LayoutDirection,
+      density: Density,
+  ): Outline {
+    val path = Path()
+    val cx = size.width / 2f
+    val cy = size.height / 2f
+    val radius = minOf(cx, cy)
+    val steps = 120
+
+    for (i in 0 until steps) {
+      val theta = (i.toFloat() / steps) * (2f * PI.toFloat())
+      val r = radius * (1f - depth + depth * cos(lobes * theta))
+      val x = cx + r * cos(theta)
+      val y = cy + r * sin(theta)
+
+      if (i == 0) {
+        path.moveTo(x, y)
+      } else {
+        path.lineTo(x, y)
+      }
+    }
+    path.close()
+    return Outline.Generic(path)
+  }
+}
+
+val ExpressiveScallopShape: Shape = Scallop10Shape()
+
+/**
+ * Material 3 Expressive morphing shape that continuously and smoothly interpolates
+ * between signature M3 shapes: 4-lobed Clover, 6-lobed Blossom, 8-lobed Flower,
+ * and 10-lobed Scallop.
+ */
+class MorphingScallopShape(
+    private val progress: Float,
+    private val depthFactor: Float = 1f,
+) : Shape {
+  override fun createOutline(
+      size: Size,
+      layoutDirection: LayoutDirection,
+      density: Density,
+  ): Outline {
+    val path = Path()
+    val cx = size.width / 2f
+    val cy = size.height / 2f
+    val radius = minOf(cx, cy)
+    val steps = 144
+
+    val lobeConfigs = listOf(
+        4 to 0.16f,
+        6 to 0.14f,
+        8 to 0.13f,
+        10 to 0.12f,
+    )
+
+    val count = lobeConfigs.size
+    val normalized = (progress % count + count) % count
+    val idxA = normalized.toInt()
+    val idxB = (idxA + 1) % count
+    val t = normalized - idxA
+
+    val (lobesA, depthA) = lobeConfigs[idxA]
+    val (lobesB, depthB) = lobeConfigs[idxB]
+
+    val effDepthA = depthA * depthFactor
+    val effDepthB = depthB * depthFactor
+
+    for (i in 0 until steps) {
+      val theta = (i.toFloat() / steps) * (2f * PI.toFloat())
+      val rA = radius * (1f - effDepthA + effDepthA * cos(lobesA * theta))
+      val rB = radius * (1f - effDepthB + effDepthB * cos(lobesB * theta))
+      val r = (1f - t) * rA + t * rB
+
+      val x = cx + r * cos(theta)
+      val y = cy + r * sin(theta)
+
+      if (i == 0) {
+        path.moveTo(x, y)
+      } else {
+        path.lineTo(x, y)
+      }
+    }
+    path.close()
+    return Outline.Generic(path)
+  }
+}
+
+
 /** 12-lobed smooth scallop / flower shape matching Material 3 Expressive standards. */
 class Scallop12Shape(
     private val lobes: Int = 12,
@@ -58,7 +153,7 @@ class Scallop12Shape(
   }
 }
 
-val ScallopShape: Shape = Scallop12Shape()
+val ScallopShape: Shape = ExpressiveScallopShape
 
 /** Asymmetrical organic rounded card shape (M3 Expressive). */
 fun asymmetricCardShape(

@@ -59,6 +59,7 @@ fun WallpaperPreviewCanvas(
           contentDescription = wallpaper.name,
           contentScale = ContentScale.Crop,
           modifier = Modifier.fillMaxSize(),
+          indicatorSize = 40.dp,
       )
     }
   }

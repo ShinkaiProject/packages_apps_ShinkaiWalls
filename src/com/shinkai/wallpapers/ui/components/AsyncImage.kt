@@ -18,9 +18,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.shinkai.wallpapers.NativeLib
 import java.io.File
@@ -71,6 +73,7 @@ fun AsyncImage(
     contentDescription: String?,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
+    indicatorSize: Dp = 44.dp,
 ) {
   val context = LocalContext.current
   var bitmap by remember(model) { mutableStateOf(model?.let { ImageMemoryCache.get(it) }) }
@@ -118,11 +121,18 @@ fun AsyncImage(
           contentAlignment = Alignment.Center,
       ) {
         if (isLoading) {
-          CircularProgressIndicator(
-              modifier = Modifier.size(24.dp),
-              strokeWidth = 2.dp,
-              color = MaterialTheme.colorScheme.primary,
-          )
+          if (indicatorSize <= 24.dp) {
+            ShinkaiLoadingIndicator(
+                size = indicatorSize,
+                contained = false,
+            )
+          } else {
+            ShinkaiCircularWavyProgressIndicator(
+                size = indicatorSize,
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.22f),
+            )
+          }
         }
       }
     }

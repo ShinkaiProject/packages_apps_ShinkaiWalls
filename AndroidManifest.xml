@@ -12,14 +12,18 @@
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/Theme.ShinkaiWallpapers"
         android:localeConfig="@xml/locales_config"
         android:allowBackup="false">
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher_round"
             android:configChanges="uiMode|screenSize|orientation|locale|layoutDirection"
-            android:theme="@android:style/Theme.Material.NoActionBar">
+            android:theme="@style/Theme.ShinkaiWallpapers">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

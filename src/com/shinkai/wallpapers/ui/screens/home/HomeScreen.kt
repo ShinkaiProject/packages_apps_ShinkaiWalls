@@ -168,7 +168,7 @@ fun HomeScreenContent(
                             val scale =
                                 if (isRefreshing) 1f else ((rawProgress - 0.35f) / 0.65f).coerceIn(0f, 1f)
                             ShinkaiLoadingIndicator(
-                                size = (50.dp * scale).coerceAtLeast(26.dp),
+                                size = (44.dp * scale).coerceAtLeast(24.dp),
                                 modifier = Modifier.align(Alignment.Center),
                             )
                         }
@@ -179,7 +179,7 @@ fun HomeScreenContent(
                 when (uiState) {
                     is HomeUiState.Loading -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            ShinkaiLoadingIndicator(size = 64.dp)
+                            ShinkaiLoadingIndicator(size = 48.dp)
                         }
                     }
 

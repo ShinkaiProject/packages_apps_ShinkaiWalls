@@ -68,6 +68,7 @@ fun ContributorCard(
                         contentDescription = contributor.login,
                         modifier = Modifier.fillMaxSize().clip(CircleShape),
                         contentScale = ContentScale.Crop,
+                        indicatorSize = 20.dp,
                     )
                 } else {
                     Text(
