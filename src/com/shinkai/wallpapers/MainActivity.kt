@@ -1,20 +1,45 @@
 package com.shinkai.wallpapers
 
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.EaseInCubic
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.shinkai.wallpapers.data.theme.ThemeRepository
 import com.shinkai.wallpapers.ui.components.FloatingNavBar
 import com.shinkai.wallpapers.ui.navigation.Screen
 import com.shinkai.wallpapers.ui.navigation.TopLevelDestination
@@ -25,21 +50,75 @@ import com.shinkai.wallpapers.ui.screens.preview.PreviewScreen
 import com.shinkai.wallpapers.ui.screens.settings.SettingsScreen
 import com.shinkai.wallpapers.ui.screens.walls.WallsScreen
 import com.shinkai.wallpapers.ui.theme.ShinkaiTheme
+import com.shinkai.wallpapers.util.LocaleHelper
+
+val ScreenSaver: Saver<Screen, String> =
+    Saver(
+        save = { screen ->
+          when (screen) {
+            is Screen.Home -> "home"
+            is Screen.Walls -> "walls"
+            is Screen.About -> "about"
+            is Screen.Settings -> "settings"
+            else -> "home"
+          }
+        },
+        restore = { value ->
+          when (value) {
+            "home" -> Screen.Home
+            "walls" -> Screen.Walls
+            "about" -> Screen.About
+            "settings" -> Screen.Settings
+            else -> Screen.Home
+          }
+        },
+    )
 
 class MainActivity : ComponentActivity() {
+
+  override fun attachBaseContext(newBase: Context) {
+    super.attachBaseContext(LocaleHelper.wrapContext(newBase))
+  }
+
+  override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+    super.onConfigurationChanged(newConfig)
+    LocaleHelper.applySavedLocale(this)
+  }
+
+  override fun onStop() {
+    super.onStop()
+    LocaleHelper.syncSystemLocale(this)
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
     enableEdgeToEdge()
     super.onCreate(savedInstanceState)
 
+    LocaleHelper.applySavedLocale(this)
+
+    val themeRepository = ThemeRepository.getInstance(applicationContext)
+
     setContent {
-      ShinkaiTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.surface,
-        ) {
-          ShinkaiApp()
+      val themePrefs by themeRepository.themePrefs.collectAsStateWithLifecycle()
+      val currentLanguage by LocaleHelper.currentLanguage.collectAsStateWithLifecycle()
+      val baseContext = LocalContext.current
+      val localizedContext =
+          remember(baseContext, currentLanguage) {
+            LocaleHelper.wrapContext(baseContext, currentLanguage)
+          }
+
+      CompositionLocalProvider(
+          LocalContext provides localizedContext,
+          LocalConfiguration provides localizedContext.resources.configuration,
+      ) {
+        ShinkaiTheme(prefs = themePrefs) {
+          Surface(
+              modifier = Modifier.fillMaxSize(),
+              color = MaterialTheme.colorScheme.surface,
+          ) {
+            ShinkaiApp()
+          }
         }
       }
     }
@@ -48,56 +127,121 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ShinkaiApp() {
-  var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
-  var currentTab by remember { mutableStateOf(TopLevelDestination.HOME) }
+  var currentScreen by rememberSaveable(stateSaver = ScreenSaver) { mutableStateOf<Screen>(Screen.Home) }
+  var currentTab by rememberSaveable { mutableStateOf(TopLevelDestination.HOME) }
 
   Box(modifier = Modifier.fillMaxSize()) {
-    when (val screen = currentScreen) {
-      is Screen.Home -> {
-        HomeScreen(
-            onWallpaperClick = { wp -> currentScreen = Screen.Preview(wp) },
-            onMoreWallpapersClick = {
-              currentTab = TopLevelDestination.WALLS
-              currentScreen = Screen.Walls
-            },
-            onSettingsClick = { currentScreen = Screen.Settings },
-        )
-      }
-      is Screen.Walls -> {
-        WallsScreen(onCategoryClick = { cat -> currentScreen = Screen.CategoryDetail(cat) })
-      }
-      is Screen.CategoryDetail -> {
-        CategoryDetailScreen(
-            category = screen.category,
-            onBack = { currentScreen = Screen.Walls },
-            onWallpaperClick = { wp -> currentScreen = Screen.Preview(wp) },
-        )
-      }
-      is Screen.Preview -> {
-        PreviewScreen(
-            wallpaper = screen.wallpaper,
-            onBack = {
-              currentScreen =
-                  when (currentTab) {
-                    TopLevelDestination.HOME -> Screen.Home
-                    TopLevelDestination.WALLS -> Screen.Walls
-                    TopLevelDestination.ABOUT -> Screen.About
-                  }
-            },
-        )
-      }
-      is Screen.About -> {
-        AboutScreen(onBack = {
-          currentTab = TopLevelDestination.HOME
-          currentScreen = Screen.Home
-        })
-      }
-      is Screen.Settings -> {
-        SettingsScreen(onBack = { currentScreen = Screen.Home })
+    AnimatedContent(
+        targetState = currentScreen,
+        transitionSpec = {
+          val isTopLevelToTopLevel =
+              (initialState is Screen.Home || initialState is Screen.Walls || initialState is Screen.About) &&
+                  (targetState is Screen.Home || targetState is Screen.Walls || targetState is Screen.About)
+
+          if (isTopLevelToTopLevel) {
+            (fadeIn(animationSpec = tween(240, easing = EaseOutCubic)) +
+                    scaleIn(initialScale = 0.98f, animationSpec = tween(240, easing = EaseOutCubic)))
+                .togetherWith(
+                    fadeOut(animationSpec = tween(180, easing = EaseInCubic)) +
+                        scaleOut(targetScale = 0.98f, animationSpec = tween(180, easing = EaseInCubic))
+                )
+          } else if (targetState is Screen.CategoryDetail || targetState is Screen.Preview || targetState is Screen.Settings) {
+            (slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec =
+                        spring(
+                            stiffness = Spring.StiffnessMediumLow,
+                            dampingRatio = Spring.DampingRatioNoBouncy,
+                        ),
+                ) + fadeIn(animationSpec = tween(220)))
+                .togetherWith(
+                    scaleOut(targetScale = 0.94f, animationSpec = tween(180, easing = EaseInCubic)) +
+                        fadeOut(animationSpec = tween(180))
+                )
+          } else {
+            (scaleIn(initialScale = 0.94f, animationSpec = tween(220, easing = EaseOutCubic)) +
+                    fadeIn(animationSpec = tween(200)))
+                .togetherWith(
+                    slideOutHorizontally(
+                        targetOffsetX = { it },
+                        animationSpec =
+                            spring(
+                                stiffness = Spring.StiffnessMediumLow,
+                                dampingRatio = Spring.DampingRatioNoBouncy,
+                            ),
+                    ) + fadeOut(animationSpec = tween(180, easing = EaseInCubic))
+                )
+          }
+        },
+        label = "MainScreenTransition",
+        modifier = Modifier.fillMaxSize(),
+    ) { screen ->
+      when (screen) {
+        is Screen.Home -> {
+          HomeScreen(
+              onWallpaperClick = { wp -> currentScreen = Screen.Preview(wp) },
+              onMoreWallpapersClick = {
+                currentTab = TopLevelDestination.WALLS
+                currentScreen = Screen.Walls
+              },
+              onSettingsClick = { currentScreen = Screen.Settings },
+          )
+        }
+        is Screen.Walls -> {
+          WallsScreen(onCategoryClick = { cat -> currentScreen = Screen.CategoryDetail(cat) })
+        }
+        is Screen.CategoryDetail -> {
+          CategoryDetailScreen(
+              category = screen.category,
+              onBack = { currentScreen = Screen.Walls },
+              onWallpaperClick = { wp -> currentScreen = Screen.Preview(wp) },
+          )
+        }
+        is Screen.Preview -> {
+          PreviewScreen(
+              wallpaper = screen.wallpaper,
+              onBack = {
+                currentScreen =
+                    when (currentTab) {
+                      TopLevelDestination.HOME -> Screen.Home
+                      TopLevelDestination.WALLS -> Screen.Walls
+                      TopLevelDestination.ABOUT -> Screen.About
+                    }
+              },
+          )
+        }
+        is Screen.About -> {
+          AboutScreen(onBack = {
+            currentTab = TopLevelDestination.HOME
+            currentScreen = Screen.Home
+          })
+        }
+        is Screen.Settings -> {
+          SettingsScreen(onBack = { currentScreen = Screen.Home })
+        }
       }
     }
 
-    if (currentScreen is Screen.Home || currentScreen is Screen.Walls || currentScreen is Screen.About) {
+    AnimatedVisibility(
+        visible = currentScreen is Screen.Home || currentScreen is Screen.Walls || currentScreen is Screen.About,
+        enter =
+            fadeIn(animationSpec = tween(200)) +
+                slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec =
+                        spring(
+                            stiffness = Spring.StiffnessMediumLow,
+                            dampingRatio = Spring.DampingRatioNoBouncy,
+                        ),
+                ),
+        exit =
+            fadeOut(animationSpec = tween(160)) +
+                slideOutVertically(
+                    targetOffsetY = { it },
+                    animationSpec = tween(160, easing = EaseInCubic),
+                ),
+        modifier = Modifier.align(Alignment.BottomCenter),
+    ) {
       FloatingNavBar(
           currentDestination = currentTab,
           onSelect = { destination ->
@@ -109,7 +253,6 @@ fun ShinkaiApp() {
                   TopLevelDestination.ABOUT -> Screen.About
                 }
           },
-          modifier = Modifier.align(Alignment.BottomCenter),
       )
     }
   }

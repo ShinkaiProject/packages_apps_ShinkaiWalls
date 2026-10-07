@@ -24,9 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.shinkai.wallpapers.R
 import com.shinkai.wallpapers.data.model.GitHubContributor
 import com.shinkai.wallpapers.ui.components.AsyncImage
 
@@ -87,7 +89,7 @@ fun ContributorCard(
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "GitHub",
+                    text = stringResource(R.string.contributor_github),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -98,7 +100,7 @@ fun ContributorCard(
                 color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f),
             ) {
                 Text(
-                    text = "${contributor.contributions} contrib.",
+                    text = stringResource(R.string.contributor_contributions, contributor.contributions),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,

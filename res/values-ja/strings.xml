@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shinkai Walls</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">ホーム</string>
+    <string name="nav_walls">コレクション</string>
+    <string name="nav_about">概要</string>
+
+    <!-- Settings -->
+    <string name="settings_title">設定</string>
+    <string name="settings_subtitle">環境設定とカスタマイズ</string>
+    <string name="settings_theme_mode">テーマモード</string>
+    <string name="settings_theme_system">システム</string>
+    <string name="settings_theme_light">ライト</string>
+    <string name="settings_theme_dark">ダーク</string>
+    <string name="settings_dynamic_color_desc">壁紙からアクセントパレットを抽出 (Monet)</string>
+    <string name="settings_custom_palette">カスタムパレット</string>
+    <string name="settings_amoled">漆黒 (AMOLED)</string>
+    <string name="settings_amoled_desc">ダークモード時に完全な黒背景を使用</string>
+    <string name="settings_language_system">システムに従う</string>
+    <string name="settings_language_system_desc">端末のシステム設定を適用</string>
+    <string name="cd_settings">設定</string>
+    <string name="cd_back">戻る</string>
+    <string name="cd_banner">Shinkai Project バナー</string>
+    <string name="home_brand">Shinkai</string>
+    <string name="about_contributors_title">貢献者</string>
+    <string name="about_contributors_subtitle">プロジェクトの共同制作者および貢献者</string>
+    <string name="contributor_contributions">%d 回の貢献</string>
+    <string name="contributor_github">GitHub</string>
+    <string name="language_title">言語</string>
+    <string name="language_subtitle">希望する言語を選択</string>
+    <string name="lang_name_en">English</string>
+    <string name="lang_sub_en">English</string>
+    <string name="lang_name_id">Bahasa Indonesia</string>
+    <string name="lang_sub_id">Indonesian</string>
+    <string name="lang_name_ja">日本語</string>
+    <string name="lang_sub_ja">Japanese</string>
+    <string name="appearance_title">外観</string>
+    <string name="appearance_subtitle">テーマモード、アクセントカラー、AMOLEDスタイル</string>
+    <string name="appearance_global_theme">全体テーマ</string>
+
+    <!-- Header -->
+    <string name="home_subtitle">厳選された壁紙とコレクション</string>
+    <string name="home_spotlight_title">おすすめ</string>
+    <string name="home_spotlight_subtitle">編集部イチオシのハイライト</string>
+    <string name="home_explore_title">見つける</string>
+    <string name="home_explore_subtitle">すべての壁紙</string>
+    <string name="walls_title">コレクション</string>
+    <string name="walls_subtitle">テーマ別カテゴリとコレクション</string>
+    <string name="walls_empty">利用可能なカテゴリがありません。</string>
+    <string name="category_empty">このカテゴリにはまだ壁紙がありません。</string>
+
+    <!-- About -->
+    <string name="about_title">概要</string>
+    <string name="about_subtitle">アプリ情報とクリエイター</string>
+    <string name="about_app_description">最新の Material 3 Expressive エクスペリエンスで厳選された壁紙をお届けします。</string>
+
+    <plurals name="walls_count">
+        <item quantity="other">%d 枚の壁紙</item>
+    </plurals>
+
+    <!-- Category names -->
+    <string name="category_pixel_walls">Pixel Walls</string>
+    <string name="category_yaemiko_walls">Yaemiko Walls</string>
+    <string name="category_lumina_walls">Lumina Walls</string>
+    <string name="category_neon_orbs_walls">Neon Orbs Walls</string>
+    <string name="category_elysia_walls">Elysia Walls</string>
+    <string name="category_mavuika_walls">Mavuika Walls</string>
+
+    <!-- Preview -->
+    <string name="preview_apply">適用</string>
+    <string name="preview_apply_question">壁紙を適用しますか？</string>
+    <string name="preview_lock_screen">ロック画面</string>
+    <string name="preview_home_screen">ホーム画面</string>
+    <string name="preview_wallpaper_set">壁紙を設定しました。</string>
+    <string name="preview_wallpaper_failed">失敗: %s</string>
+</resources>

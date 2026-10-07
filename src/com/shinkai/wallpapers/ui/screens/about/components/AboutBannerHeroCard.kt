@@ -55,7 +55,7 @@ fun AboutBannerHeroCard(
             ) {
                 Image(
                     painter = painterResource(R.drawable.ic_banner),
-                    contentDescription = "Shinkai Project Banner",
+                    contentDescription = stringResource(R.string.cd_banner),
                     contentScale = ContentScale.Crop,
                     modifier =
                         Modifier.fillMaxSize()

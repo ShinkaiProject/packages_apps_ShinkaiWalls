@@ -110,14 +110,14 @@ fun AboutScreen(
                 item {
                     Column(modifier = Modifier.fillMaxWidth().padding(start = 4.dp, bottom = 4.dp)) {
                         Text(
-                            text = "Contributors",
+                            text = stringResource(R.string.about_contributors_title),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "Collaborators and contributors to the project.",
+                            text = stringResource(R.string.about_contributors_subtitle),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

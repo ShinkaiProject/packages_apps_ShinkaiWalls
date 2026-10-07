@@ -118,7 +118,7 @@ fun HomeScreenContent(
         ) {
             Column {
                 Text(
-                    text = "Shinkai",
+                    text = stringResource(R.string.home_brand),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     fontSize = 28.sp,
@@ -144,7 +144,7 @@ fun HomeScreenContent(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Settings,
-                    contentDescription = "Settings",
+                    contentDescription = stringResource(R.string.cd_settings),
                     modifier = Modifier.size(20.dp),
                 )
             }

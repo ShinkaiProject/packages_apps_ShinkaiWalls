@@ -95,7 +95,7 @@ fun CategoryDetailScreen(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = "Back",
+                    contentDescription = stringResource(R.string.cd_back),
                     modifier = Modifier.size(20.dp),
                 )
             }

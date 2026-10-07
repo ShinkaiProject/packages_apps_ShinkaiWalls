@@ -1,25 +1,38 @@
 package com.shinkai.wallpapers.ui.screens.settings
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.EaseInCubic
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.outlined.Tune
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -27,26 +40,127 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.shinkai.wallpapers.R
+import com.shinkai.wallpapers.ui.screens.settings.components.SettingsGroupItem
+import com.shinkai.wallpapers.ui.screens.settings.components.SettingsSubsection
+import com.shinkai.wallpapers.ui.screens.settings.components.itemShapeFor
+import com.shinkai.wallpapers.util.LocaleHelper
+
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+
+enum class SettingsSubScreen {
+    MAIN,
+    APPEARANCE,
+    LANGUAGE,
+}
 
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: SettingsViewModel = viewModel(),
 ) {
-    BackHandler(onBack = onBack)
+    var currentSubScreen by rememberSaveable { mutableStateOf(SettingsSubScreen.MAIN) }
+
+    BackHandler(enabled = currentSubScreen != SettingsSubScreen.MAIN) {
+        currentSubScreen = SettingsSubScreen.MAIN
+    }
+
+    AnimatedContent(
+        targetState = currentSubScreen,
+        transitionSpec = {
+            if (targetState != SettingsSubScreen.MAIN) {
+                (slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec =
+                        spring(
+                            stiffness = Spring.StiffnessMediumLow,
+                            dampingRatio = Spring.DampingRatioNoBouncy,
+                        ),
+                ) + fadeIn(animationSpec = tween(220)))
+                    .togetherWith(
+                        scaleOut(targetScale = 0.94f, animationSpec = tween(180, easing = EaseInCubic)) +
+                                fadeOut(animationSpec = tween(180))
+                    )
+            } else {
+                // Backward transition
+                (scaleIn(initialScale = 0.94f, animationSpec = tween(220, easing = EaseOutCubic)) +
+                        fadeIn(animationSpec = tween(200)))
+                    .togetherWith(
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec =
+                                spring(
+                                    stiffness = Spring.StiffnessMediumLow,
+                                    dampingRatio = Spring.DampingRatioNoBouncy,
+                                ),
+                        ) + fadeOut(animationSpec = tween(180, easing = EaseInCubic))
+                    )
+            }
+        },
+        label = "SettingsScreenTransition",
+        modifier = modifier.fillMaxSize(),
+    ) { subScreen ->
+        when (subScreen) {
+            SettingsSubScreen.MAIN -> {
+                SettingsMainMenu(
+                    onBack = onBack,
+                    onNavigateToAppearance = { currentSubScreen = SettingsSubScreen.APPEARANCE },
+                    onNavigateToLanguage = { currentSubScreen = SettingsSubScreen.LANGUAGE },
+                    viewModel = viewModel,
+                )
+            }
+
+            SettingsSubScreen.APPEARANCE -> {
+                AppearanceScreen(
+                    onBack = { currentSubScreen = SettingsSubScreen.MAIN },
+                    viewModel = viewModel,
+                )
+            }
+
+            SettingsSubScreen.LANGUAGE -> {
+                LanguageScreen(
+                    onBack = { currentSubScreen = SettingsSubScreen.MAIN },
+                    viewModel = viewModel,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SettingsMainMenu(
+    onBack: () -> Unit,
+    onNavigateToAppearance: () -> Unit,
+    onNavigateToLanguage: () -> Unit,
+    viewModel: SettingsViewModel,
+) {
+    val context = LocalContext.current
+    val currentLangTag by viewModel.currentLanguage.collectAsStateWithLifecycle()
+    val supportedLanguages = remember(context, currentLangTag) { LocaleHelper.getSupportedLanguages(context) }
+    val currentLanguageItem =
+        remember(currentLangTag, supportedLanguages) {
+            supportedLanguages.firstOrNull { it.tag == currentLangTag }
+                ?: supportedLanguages.first()
+        }
 
     Column(
         modifier =
-            modifier
+            Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
@@ -71,7 +185,7 @@ fun SettingsScreen(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = "Back",
+                    contentDescription = stringResource(R.string.cd_back),
                     modifier = Modifier.size(20.dp),
                 )
             }
@@ -99,57 +213,41 @@ fun SettingsScreen(
             color = MaterialTheme.colorScheme.surfaceContainer,
             shadowElevation = 8.dp,
         ) {
-            Box(
-                modifier = Modifier.fillMaxSize().padding(24.dp),
-                contentAlignment = Alignment.Center,
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding =
+                    PaddingValues(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 20.dp,
+                        bottom = 40.dp,
+                    ),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    shape = RoundedCornerShape(28.dp),
-                    colors =
-                        CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                ) {
-                    Column(
-                        modifier = Modifier.padding(28.dp).fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                item {
+                    SettingsSubsection(
+                        title = stringResource(R.string.appearance_title),
                     ) {
-                        Box(
-                            modifier =
-                                Modifier.size(64.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.primaryContainer),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Tune,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                modifier = Modifier.size(32.dp),
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        Text(
-                            text = stringResource(R.string.settings_coming_soon_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            textAlign = TextAlign.Center,
+                        SettingsGroupItem(
+                            icon = Icons.Outlined.Palette,
+                            title = stringResource(R.string.appearance_title),
+                            subtitle = stringResource(R.string.appearance_subtitle),
+                            onClick = onNavigateToAppearance,
+                            shape = itemShapeFor(0, 1),
                         )
+                    }
+                }
 
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = stringResource(R.string.settings_coming_soon_desc),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center,
-                            lineHeight = 20.sp,
+                item {
+                    SettingsSubsection(
+                        title = stringResource(R.string.language_title),
+                    ) {
+                        SettingsGroupItem(
+                            icon = Icons.Outlined.Language,
+                            title = stringResource(R.string.language_title),
+                            subtitle = currentLanguageItem.nativeName,
+                            onClick = onNavigateToLanguage,
+                            shape = itemShapeFor(0, 1),
                         )
                     }
                 }
