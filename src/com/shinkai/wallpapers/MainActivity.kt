@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContent
@@ -130,46 +131,104 @@ fun ShinkaiApp() {
   var currentScreen by rememberSaveable(stateSaver = ScreenSaver) { mutableStateOf<Screen>(Screen.Home) }
   var currentTab by rememberSaveable { mutableStateOf(TopLevelDestination.HOME) }
 
+  BackHandler(enabled = currentScreen is Screen.Walls) {
+    currentTab = TopLevelDestination.HOME
+    currentScreen = Screen.Home
+  }
+
   Box(modifier = Modifier.fillMaxSize()) {
     AnimatedContent(
         targetState = currentScreen,
         transitionSpec = {
-          val isTopLevelToTopLevel =
-              (initialState is Screen.Home || initialState is Screen.Walls || initialState is Screen.About) &&
-                  (targetState is Screen.Home || targetState is Screen.Walls || targetState is Screen.About)
+          val initialTabIndex =
+              when (initialState) {
+                is Screen.Home -> 0
+                is Screen.Walls -> 1
+                is Screen.About -> 2
+                else -> -1
+              }
+          val targetTabIndex =
+              when (targetState) {
+                is Screen.Home -> 0
+                is Screen.Walls -> 1
+                is Screen.About -> 2
+                else -> -1
+              }
 
-          if (isTopLevelToTopLevel) {
-            (fadeIn(animationSpec = tween(240, easing = EaseOutCubic)) +
-                    scaleIn(initialScale = 0.98f, animationSpec = tween(240, easing = EaseOutCubic)))
-                .togetherWith(
-                    fadeOut(animationSpec = tween(180, easing = EaseInCubic)) +
-                        scaleOut(targetScale = 0.98f, animationSpec = tween(180, easing = EaseInCubic))
-                )
+          if (initialTabIndex != -1 && targetTabIndex != -1) {
+            val isForward = targetTabIndex > initialTabIndex
+            if (isForward) {
+              (slideInHorizontally(
+                      initialOffsetX = { (it * 0.35f).toInt() },
+                      animationSpec =
+                          spring(
+                              dampingRatio = 0.88f,
+                              stiffness = Spring.StiffnessMediumLow,
+                          ),
+                  ) + fadeIn(animationSpec = tween(280, easing = EaseOutCubic)))
+                  .togetherWith(
+                      slideOutHorizontally(
+                          targetOffsetX = { (-it * 0.35f).toInt() },
+                          animationSpec =
+                              spring(
+                                  dampingRatio = 0.88f,
+                                  stiffness = Spring.StiffnessMediumLow,
+                              ),
+                      ) + fadeOut(animationSpec = tween(200, easing = EaseInCubic))
+                  )
+            } else {
+              (slideInHorizontally(
+                      initialOffsetX = { (-it * 0.35f).toInt() },
+                      animationSpec =
+                          spring(
+                              dampingRatio = 0.88f,
+                              stiffness = Spring.StiffnessMediumLow,
+                          ),
+                  ) + fadeIn(animationSpec = tween(280, easing = EaseOutCubic)))
+                  .togetherWith(
+                      slideOutHorizontally(
+                          targetOffsetX = { (it * 0.35f).toInt() },
+                          animationSpec =
+                              spring(
+                                  dampingRatio = 0.88f,
+                                  stiffness = Spring.StiffnessMediumLow,
+                              ),
+                      ) + fadeOut(animationSpec = tween(200, easing = EaseInCubic))
+                  )
+            }
           } else if (targetState is Screen.CategoryDetail || targetState is Screen.Preview || targetState is Screen.Settings) {
             (slideInHorizontally(
-                    initialOffsetX = { it },
+                    initialOffsetX = { (it * 0.32f).toInt() },
                     animationSpec =
                         spring(
+                            dampingRatio = 0.88f,
                             stiffness = Spring.StiffnessMediumLow,
-                            dampingRatio = Spring.DampingRatioNoBouncy,
                         ),
-                ) + fadeIn(animationSpec = tween(220)))
-                .togetherWith(
-                    scaleOut(targetScale = 0.94f, animationSpec = tween(180, easing = EaseInCubic)) +
-                        fadeOut(animationSpec = tween(180))
-                )
-          } else {
-            (scaleIn(initialScale = 0.94f, animationSpec = tween(220, easing = EaseOutCubic)) +
-                    fadeIn(animationSpec = tween(200)))
+                ) + fadeIn(animationSpec = tween(280, easing = EaseOutCubic)) +
+                    scaleIn(initialScale = 0.94f, animationSpec = tween(280, easing = EaseOutCubic)))
                 .togetherWith(
                     slideOutHorizontally(
-                        targetOffsetX = { it },
+                        targetOffsetX = { (-it * 0.12f).toInt() },
+                        animationSpec = tween(220, easing = EaseInCubic),
+                    ) + fadeOut(animationSpec = tween(180, easing = EaseInCubic)) +
+                        scaleOut(targetScale = 0.96f, animationSpec = tween(220, easing = EaseInCubic))
+                )
+          } else {
+            (slideInHorizontally(
+                    initialOffsetX = { (-it * 0.12f).toInt() },
+                    animationSpec = tween(240, easing = EaseOutCubic),
+                ) + fadeIn(animationSpec = tween(220, easing = EaseOutCubic)) +
+                    scaleIn(initialScale = 0.96f, animationSpec = tween(240, easing = EaseOutCubic)))
+                .togetherWith(
+                    slideOutHorizontally(
+                        targetOffsetX = { (it * 0.32f).toInt() },
                         animationSpec =
                             spring(
+                                dampingRatio = 0.88f,
                                 stiffness = Spring.StiffnessMediumLow,
-                                dampingRatio = Spring.DampingRatioNoBouncy,
                             ),
-                    ) + fadeOut(animationSpec = tween(180, easing = EaseInCubic))
+                    ) + fadeOut(animationSpec = tween(200, easing = EaseInCubic)) +
+                        scaleOut(targetScale = 0.94f, animationSpec = tween(220, easing = EaseInCubic))
                 )
           }
         },
