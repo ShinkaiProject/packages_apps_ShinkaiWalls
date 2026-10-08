@@ -176,7 +176,7 @@ pub async fn download_image(url: &str, cache_dir: &str) -> Result<String, Shinka
     let file_path = cache_path.join(format!("{file_name}.{ext}"));
     if fs::try_exists(&file_path).await.unwrap_or(false) {
         touch(file_path.clone());
-        if HIT_COUNTER.fetch_add(1, Ordering::Relaxed) % PRUNE_EVERY_N_HITS == 0 {
+        if HIT_COUNTER.fetch_add(1, Ordering::Relaxed).is_multiple_of(PRUNE_EVERY_N_HITS) {
             spawn_prune(cache_path.clone());
         }
         return path_to_string(&file_path);
@@ -197,7 +197,7 @@ pub async fn download_image(url: &str, cache_dir: &str) -> Result<String, Shinka
     let mut attempt: u32 = 0;
 
     loop {
-        match fetch_to_file(&client, url, &tmp_path, &file_path).await {
+        match fetch_to_file(client, url, &tmp_path, &file_path).await {
             Ok(()) => break,
             Err(Failure::Fatal(e)) => {
                 let _ = fs::remove_file(&tmp_path).await;
