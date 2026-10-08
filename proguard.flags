@@ -1,0 +1,48 @@
+# ProGuard / R8 optimization and shrinking rules for ShinkaiWalls
+
+# Full obfuscation: repackage classes into root package and allow access modification for aggressive inlining
+-allowaccessmodification
+-repackageclasses ''
+
+-dontwarn org.jetbrains.annotations.**
+
+# Keep manifest-referenced components and JNI bridges from being repackaged
+-keep class com.shinkai.wallpapers.MainActivity
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+-keep class com.shinkai.wallpapers.NativeLib {
+    *;
+}
+
+# Preserve data models (serialized/parsed via JSON)
+-keep class com.shinkai.wallpapers.data.model.** {
+    *;
+}
+
+# Preserve Compose runtime, lambdas, and stability markers
+-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
+-keepclassmembers class * {
+    @androidx.compose.runtime.Composable *;
+}
+-dontwarn androidx.compose.**
+
+# Kotlin coroutines: keep enough to function under aggressive optimization
+-dontwarn kotlinx.coroutines.**
+-keepclassmembers class kotlin.coroutines.SafeContinuation {
+    volatile java.lang.Object result;
+}
+-keepclassmembers class kotlinx.coroutines.** {
+    volatile <fields>;
+}
+
+# Lifecycle & ViewModel reflection
+-keep class * extends androidx.lifecycle.ViewModel {
+    <init>(...);
+}
+
+# Drop debug logs from the shipped APK
+-assumenosideeffects class android.util.Log {
+    public static *** v(...);
+    public static *** d(...);
+}

@@ -23,35 +23,31 @@ import com.shinkai.wallpapers.data.model.Wallpaper
 fun WallpaperCard(
     wallpaper: Wallpaper,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth()
+  Column(modifier = modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier.fillMaxWidth().aspectRatio(9f / 16f).clickable(onClick = onClick),
+        shape = RoundedCornerShape(24.dp),
+        colors =
+            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(9f / 16f)
-                .clickable(onClick = onClick),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-        ) {
-            AsyncImage(
-                model = wallpaper.assetPath,
-                contentDescription = wallpaper.name,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-        Text(
-            text = wallpaper.name,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp, start = 4.dp, end = 4.dp)
-        )
+      AsyncImage(
+          model = wallpaper.assetPath,
+          contentDescription = wallpaper.name,
+          contentScale = ContentScale.Crop,
+          modifier = Modifier.fillMaxSize(),
+      )
     }
+    Text(
+        text = wallpaper.name,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Medium,
+        color = MaterialTheme.colorScheme.onSurface,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp, start = 4.dp, end = 4.dp),
+    )
+  }
 }

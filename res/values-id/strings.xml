@@ -1,0 +1,88 @@
+<resources>
+    <string name="app_name">Shinkai Walls</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Beranda</string>
+    <string name="nav_walls">Koleksi</string>
+    <string name="nav_about">Tentang</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Pengaturan</string>
+    <string name="settings_subtitle">Preferensi &amp; kustomisasi</string>
+    <string name="settings_theme_mode">Mode Tema</string>
+    <string name="settings_theme_system">Sistem</string>
+    <string name="settings_theme_light">Terang</string>
+    <string name="settings_theme_dark">Gelap</string>
+    <string name="settings_dynamic_color_desc">Ambil palet aksen dari wallpaper (Monet)</string>
+    <string name="settings_custom_palette">Palet Aksen Kustom</string>
+    <string name="settings_amoled">Hitam Pekat (AMOLED)</string>
+    <string name="settings_amoled_desc">Gunakan latar hitam pekat pada mode gelap</string>
+    <string name="settings_language_system">Ikuti Sistem</string>
+    <string name="settings_language_system_desc">Default sesuai sistem perangkat</string>
+    <string name="cd_settings">Pengaturan</string>
+    <string name="cd_back">Kembali</string>
+    <string name="cd_banner">Banner Shinkai Project</string>
+    <string name="home_brand">Shinkai</string>
+    <string name="about_contributors_title">Kontributor</string>
+    <string name="about_contributors_subtitle">Kolaborator dan kontributor proyek.</string>
+    <string name="contributor_contributions">%d kontrib.</string>
+    <string name="contributor_github">GitHub</string>
+    <string name="language_title">Bahasa</string>
+    <string name="language_subtitle">Pilih bahasa preferensi Anda</string>
+    <string name="lang_name_en">English</string>
+    <string name="lang_sub_en">English</string>
+    <string name="lang_name_id">Bahasa Indonesia</string>
+    <string name="lang_sub_id">Indonesia</string>
+    <string name="lang_name_ja">日本語</string>
+    <string name="lang_sub_ja">Japanese</string>
+    <string name="appearance_title">Tampilan</string>
+    <string name="appearance_subtitle">Mode tema, warna aksen &amp; gaya AMOLED</string>
+    <string name="appearance_global_theme">Tema Global</string>
+
+    <!-- Header & Sections -->
+    <string name="home_subtitle">Koleksi &amp; pilihan wallpaper terbaik</string>
+    <string name="home_spotlight_title">Sorotan</string>
+    <string name="home_spotlight_subtitle">Pilihan editor terkurasi</string>
+    <string name="home_explore_title">Jelajahi</string>
+    <string name="home_explore_subtitle">Semua koleksi wallpaper</string>
+    <string name="walls_title">Koleksi</string>
+    <string name="walls_subtitle">Pilihan set &amp; kategori bertema</string>
+    <string name="walls_empty">Belum ada kategori.</string>
+    <string name="category_empty">Belum ada wallpaper di kategori ini.</string>
+
+    <!-- About -->
+    <string name="about_title">Tentang</string>
+    <string name="about_subtitle">Informasi aplikasi &amp; kontributor</string>
+    <string name="about_app_description">Koleksi wallpaper terkurasi dengan pengalaman modern Material 3 Expressive.</string>
+
+    <!-- Plurals -->
+    <plurals name="walls_count">
+        <item quantity="other">%d wallpaper</item>
+    </plurals>
+
+    <!-- Category names -->
+    <string name="category_pixel_walls">Pixel Walls</string>
+    <string name="category_yaemiko_walls">Yaemiko Walls</string>
+    <string name="category_lumina_walls">Lumina Walls</string>
+    <string name="category_neon_orbs_walls">Neon Orbs Walls</string>
+    <string name="category_elysia_walls">Elysia Walls</string>
+    <string name="category_mavuika_walls">Mavuika Walls</string>
+
+    <!-- Preview -->
+    <string name="preview_apply">Terapkan</string>
+    <string name="preview_apply_question">Terapkan wallpaper?</string>
+    <string name="preview_apply_subtitle">Pilih tampilan layar</string>
+    <string name="preview_both_screens">Layar Utama &amp; Kunci</string>
+    <string name="preview_both_screens_sub">Kedua Layar</string>
+    <string name="preview_both_screens_desc">Terapkan wallpaper untuk layar utama dan layar kunci sekaligus.</string>
+    <string name="preview_lock_screen">Layar Kunci</string>
+    <string name="preview_lock_screen_sub">Hanya Layar Kunci</string>
+    <string name="preview_lock_screen_desc">Hanya diterapkan pada layar kunci tanpa mengubah layar utama.</string>
+    <string name="preview_home_screen">Layar Utama</string>
+    <string name="preview_home_screen_sub">Hanya Layar Utama</string>
+    <string name="preview_home_screen_desc">Hanya diterapkan pada layar utama atau peluncur aplikasi.</string>
+    <string name="preview_badge_recommended">DISARANKAN</string>
+    <string name="preview_top_bar_subtitle">Wallpaper &amp; Gaya</string>
+    <string name="preview_wallpaper_set">Wallpaper berhasil dipasang.</string>
+    <string name="preview_wallpaper_failed">Gagal: %s</string>
+</resources>
