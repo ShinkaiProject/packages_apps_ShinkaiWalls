@@ -130,10 +130,26 @@ class MainActivity : ComponentActivity() {
 fun ShinkaiApp() {
   var currentScreen by rememberSaveable(stateSaver = ScreenSaver) { mutableStateOf<Screen>(Screen.Home) }
   var currentTab by rememberSaveable { mutableStateOf(TopLevelDestination.HOME) }
+  var categoryDetailBackTarget by remember { mutableStateOf<Screen>(Screen.Home) }
+  var previewBackTarget by remember { mutableStateOf<Screen>(Screen.Home) }
 
-  BackHandler(enabled = currentScreen is Screen.Walls) {
-    currentTab = TopLevelDestination.HOME
-    currentScreen = Screen.Home
+  BackHandler(enabled = currentScreen !is Screen.Home) {
+    when (currentScreen) {
+      is Screen.Preview -> currentScreen = previewBackTarget
+      is Screen.CategoryDetail -> currentScreen = categoryDetailBackTarget
+      is Screen.Settings ->
+          currentScreen =
+              when (currentTab) {
+                TopLevelDestination.HOME -> Screen.Home
+                TopLevelDestination.WALLS -> Screen.Walls
+                TopLevelDestination.ABOUT -> Screen.About
+              }
+      is Screen.Walls, is Screen.About -> {
+        currentTab = TopLevelDestination.HOME
+        currentScreen = Screen.Home
+      }
+      Screen.Home -> Unit
+    }
   }
 
   Box(modifier = Modifier.fillMaxSize()) {
@@ -238,7 +254,14 @@ fun ShinkaiApp() {
       when (screen) {
         is Screen.Home -> {
           HomeScreen(
-              onWallpaperClick = { wp -> currentScreen = Screen.Preview(wp) },
+              onWallpaperClick = { wp ->
+                previewBackTarget = Screen.Home
+                currentScreen = Screen.Preview(wp)
+              },
+              onCategoryClick = { cat ->
+                categoryDetailBackTarget = Screen.Home
+                currentScreen = Screen.CategoryDetail(cat)
+              },
               onMoreWallpapersClick = {
                 currentTab = TopLevelDestination.WALLS
                 currentScreen = Screen.Walls
@@ -247,26 +270,27 @@ fun ShinkaiApp() {
           )
         }
         is Screen.Walls -> {
-          WallsScreen(onCategoryClick = { cat -> currentScreen = Screen.CategoryDetail(cat) })
+          WallsScreen(
+              onCategoryClick = { cat ->
+                categoryDetailBackTarget = Screen.Walls
+                currentScreen = Screen.CategoryDetail(cat)
+              }
+          )
         }
         is Screen.CategoryDetail -> {
           CategoryDetailScreen(
               category = screen.category,
-              onBack = { currentScreen = Screen.Walls },
-              onWallpaperClick = { wp -> currentScreen = Screen.Preview(wp) },
+              onBack = { currentScreen = categoryDetailBackTarget },
+              onWallpaperClick = { wp ->
+                previewBackTarget = screen
+                currentScreen = Screen.Preview(wp)
+              },
           )
         }
         is Screen.Preview -> {
           PreviewScreen(
               wallpaper = screen.wallpaper,
-              onBack = {
-                currentScreen =
-                    when (currentTab) {
-                      TopLevelDestination.HOME -> Screen.Home
-                      TopLevelDestination.WALLS -> Screen.Walls
-                      TopLevelDestination.ABOUT -> Screen.About
-                    }
-              },
+              onBack = { currentScreen = previewBackTarget },
           )
         }
         is Screen.About -> {

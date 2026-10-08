@@ -1,5 +1,6 @@
 package com.shinkai.wallpapers.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,31 +45,33 @@ fun AuriyaDragHandle(modifier: Modifier = Modifier) {
 @Composable
 fun BottomSheetHeader(
     title: String,
-    subtitle: String,
+    subtitle: String? = null,
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth().padding(bottom = 6.dp),
+        modifier = modifier.fillMaxWidth().padding(bottom = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = title,
             style =
                 MaterialTheme.typography.headlineSmall.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                 ),
         )
-        Spacer(Modifier.height(4.dp))
-        Text(
-            text = subtitle,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.primary,
-            textAlign = TextAlign.Center,
-        )
+        if (!subtitle.isNullOrBlank()) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Normal,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+        }
     }
 }
 
@@ -79,14 +82,14 @@ fun RichSelectionCard(
     description: String,
     icon: ImageVector,
     selected: Boolean,
-    badgeText: String = "ACTIVE",
+    badgeText: String? = null,
     onClick: () -> Unit,
 ) {
     val cardBg =
-        if (selected) MaterialTheme.colorScheme.primaryContainer
+        if (selected) MaterialTheme.colorScheme.secondaryContainer
         else MaterialTheme.colorScheme.surfaceContainerHigh
     val onCardBg =
-        if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+        if (selected) MaterialTheme.colorScheme.onSecondaryContainer
         else MaterialTheme.colorScheme.onSurface
     val iconContainerColor =
         if (selected) MaterialTheme.colorScheme.primary
@@ -97,8 +100,9 @@ fun RichSelectionCard(
 
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(22.dp),
         color = cardBg,
+        border = null,
         modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
@@ -136,24 +140,28 @@ fun RichSelectionCard(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false),
                     )
-                    if (selected) {
+                    if (badgeText != null) {
                         Spacer(Modifier.width(8.dp))
                         Surface(
                             shape = RoundedCornerShape(8.dp),
-                            color = MaterialTheme.colorScheme.primary,
+                            color =
+                                if (selected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.surfaceContainerHighest,
                         ) {
                             Text(
                                 text = badgeText,
                                 style =
                                     MaterialTheme.typography.labelSmall.copy(
-                                        fontSize = 9.5.sp,
+                                        fontSize = 10.sp,
                                         letterSpacing = 0.4.sp,
                                     ),
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimary,
+                                color =
+                                    if (selected) MaterialTheme.colorScheme.onPrimary
+                                    else MaterialTheme.colorScheme.primary,
                                 maxLines = 1,
                                 softWrap = false,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.5.dp),
                             )
                         }
                     }
@@ -164,7 +172,8 @@ fun RichSelectionCard(
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Medium,
                     color =
-                        if (selected) onCardBg.copy(alpha = 0.8f) else MaterialTheme.colorScheme.primary,
+                        if (selected) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
@@ -172,7 +181,7 @@ fun RichSelectionCard(
                     style = MaterialTheme.typography.bodyMedium,
                     color =
                         if (selected) onCardBg.copy(alpha = 0.85f)
-                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                        else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
                     lineHeight = 19.sp,
                 )
             }

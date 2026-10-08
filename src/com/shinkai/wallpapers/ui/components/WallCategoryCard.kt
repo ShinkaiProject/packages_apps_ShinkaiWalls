@@ -36,6 +36,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.shinkai.wallpapers.data.model.WallCategory
 
+private val CategoryScrimGradient =
+    Brush.verticalGradient(
+        colors =
+            listOf(
+                Color.Transparent,
+                Color.Black.copy(alpha = 0.15f),
+                Color.Black.copy(alpha = 0.85f),
+            ),
+        startY = 60f,
+    )
+
 @Composable
 fun WallCategoryCard(
     category: WallCategory,
@@ -44,7 +55,7 @@ fun WallCategoryCard(
     aspectRatio: Float = 1.0f,
 ) {
   var isPressed by remember { mutableStateOf(false) }
-  val scale by
+  val scale =
       animateFloatAsState(
           targetValue = if (isPressed) 0.95f else 1f,
           animationSpec =
@@ -61,8 +72,9 @@ fun WallCategoryCard(
               .fillMaxWidth()
               .aspectRatio(aspectRatio)
               .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
+                val s = scale.value
+                scaleX = s
+                scaleY = s
               }
               .pointerInput(Unit) {
                 detectTapGestures(
@@ -90,17 +102,7 @@ fun WallCategoryCard(
       Box(
           modifier =
               Modifier.fillMaxSize()
-                  .background(
-                      Brush.verticalGradient(
-                          colors =
-                              listOf(
-                                  Color.Transparent,
-                                  Color.Black.copy(alpha = 0.15f),
-                                  Color.Black.copy(alpha = 0.85f),
-                              ),
-                          startY = 60f,
-                      )
-                  )
+                  .background(CategoryScrimGradient)
       )
 
       // Content at bottom of card

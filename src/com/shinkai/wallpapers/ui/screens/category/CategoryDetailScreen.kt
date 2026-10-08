@@ -157,6 +157,7 @@ fun CategoryDetailScreen(
                     itemsIndexed(
                         items = category.wallpapers,
                         key = { _, item -> item.assetPath },
+                        contentType = { _, _ -> "category_wallpaper_pin" },
                     ) { index, wallpaper ->
                         val ratio = CategoryAspectRatios[index % CategoryAspectRatios.size]
                         CategoryWallpaperPin(
@@ -178,22 +179,23 @@ private fun CategoryWallpaperPin(
     onClick: () -> Unit,
 ) {
     var isPressed by remember { mutableStateOf(false) }
-    val scale by
-    animateFloatAsState(
-        targetValue = if (isPressed) 0.95f else 1f,
-        animationSpec =
-            spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessLow,
-            ),
-        label = "categoryPinScale",
-    )
+    val scale =
+        animateFloatAsState(
+            targetValue = if (isPressed) 0.95f else 1f,
+            animationSpec =
+                spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow,
+                ),
+            label = "categoryPinScale",
+        )
 
     Column(
         modifier =
             Modifier.fillMaxWidth().graphicsLayer {
-                scaleX = scale
-                scaleY = scale
+                val s = scale.value
+                scaleX = s
+                scaleY = s
             }
     ) {
         Card(

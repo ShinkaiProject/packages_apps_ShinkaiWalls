@@ -28,7 +28,7 @@ import com.shinkai.wallpapers.R
 @Composable
 fun PreviewTopBar(
     title: String,
-    subtitle: String = "Wallpaper & Style",
+    subtitle: String = stringResource(R.string.preview_top_bar_subtitle),
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

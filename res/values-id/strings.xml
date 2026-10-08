@@ -71,8 +71,18 @@
     <!-- Preview -->
     <string name="preview_apply">Terapkan</string>
     <string name="preview_apply_question">Terapkan wallpaper?</string>
+    <string name="preview_apply_subtitle">Pilih tampilan layar</string>
+    <string name="preview_both_screens">Layar Utama &amp; Kunci</string>
+    <string name="preview_both_screens_sub">Kedua Layar</string>
+    <string name="preview_both_screens_desc">Terapkan wallpaper untuk layar utama dan layar kunci sekaligus.</string>
     <string name="preview_lock_screen">Layar Kunci</string>
+    <string name="preview_lock_screen_sub">Hanya Layar Kunci</string>
+    <string name="preview_lock_screen_desc">Hanya diterapkan pada layar kunci tanpa mengubah layar utama.</string>
     <string name="preview_home_screen">Layar Utama</string>
+    <string name="preview_home_screen_sub">Hanya Layar Utama</string>
+    <string name="preview_home_screen_desc">Hanya diterapkan pada layar utama atau peluncur aplikasi.</string>
+    <string name="preview_badge_recommended">DISARANKAN</string>
+    <string name="preview_top_bar_subtitle">Wallpaper &amp; Gaya</string>
     <string name="preview_wallpaper_set">Wallpaper berhasil dipasang.</string>
     <string name="preview_wallpaper_failed">Gagal: %s</string>
 </resources>

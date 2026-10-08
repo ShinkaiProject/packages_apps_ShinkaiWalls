@@ -48,10 +48,16 @@ fun AboutScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    val openUrl: (String) -> Unit = { url ->
-        runCatching {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    val openUrl: (String) -> Unit = { rawUrl ->
+        val url = rawUrl.trim().ifBlank { "https://github.com/ShinkaiProject" }
+        val finalUrl = if (url.startsWith("http://") || url.startsWith("https://")) url else "https://$url"
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(finalUrl)).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
             context.startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

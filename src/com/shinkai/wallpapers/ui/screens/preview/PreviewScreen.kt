@@ -2,7 +2,6 @@ package com.shinkai.wallpapers.ui.screens.preview
 
 import android.app.WallpaperManager
 import android.content.Context
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -77,6 +76,7 @@ fun PreviewScreen(
     // 2. Floating Phone Canvas (Center)
     WallpaperPreviewCanvas(
         wallpaper = wallpaper,
+        isApplying = isApplying,
         modifier = Modifier.weight(1f),
     )
 
@@ -98,9 +98,14 @@ fun PreviewScreen(
           showApplySheet = false
           isApplying = true
           scope.launch {
-            applyWallpaperToDevice(context, wallpaper, flag)
-            isApplying = false
-            onBack()
+            val success = applyWallpaperToDevice(context, wallpaper, flag)
+            if (success) {
+              isApplying = false
+              kotlinx.coroutines.delay(380)
+              onBack()
+            } else {
+              isApplying = false
+            }
           }
         },
     )
@@ -111,7 +116,7 @@ private suspend fun applyWallpaperToDevice(
     context: Context,
     wallpaper: Wallpaper,
     flag: Int,
-) =
+): Boolean =
     withContext(Dispatchers.IO) {
       try {
         val safeFileName = "${wallpaper.name.replace(Regex("[^A-Za-z0-9]"), "_")}.jpg"
@@ -119,14 +124,11 @@ private suspend fun applyWallpaperToDevice(
         val localFile = File(wallsDir, safeFileName)
 
         if (!localFile.exists()) {
-          val url = wallpaper.fullUrl.ifEmpty { wallpaper.assetPath }
-          val conn =
-              URL(url).openConnection().apply {
-                connectTimeout = 10_000
-                readTimeout = 10_000
-              }
-          conn.getInputStream().use { input ->
-            FileOutputStream(localFile).use { output -> input.copyTo(output) }
+          val primaryUrl = wallpaper.fullUrl.ifEmpty { wallpaper.assetPath }
+          val downloaded = tryDownloadToFile(primaryUrl, localFile) ||
+              (wallpaper.assetPath.isNotEmpty() && wallpaper.assetPath != primaryUrl && tryDownloadToFile(wallpaper.assetPath, localFile))
+          if (!downloaded) {
+            return@withContext false
           }
         }
 
@@ -134,17 +136,28 @@ private suspend fun applyWallpaperToDevice(
         localFile.inputStream().use { stream ->
           wm.setStream(stream, null, true, flag)
         }
-        withContext(Dispatchers.Main) {
-          Toast.makeText(context, R.string.preview_wallpaper_set, Toast.LENGTH_SHORT).show()
-        }
+        true
       } catch (e: Exception) {
-        withContext(Dispatchers.Main) {
-          Toast.makeText(
-                  context,
-                  context.getString(R.string.preview_wallpaper_failed, e.message),
-                  Toast.LENGTH_LONG,
-              )
-              .show()
-        }
+        android.util.Log.e("PreviewScreen", "Failed to apply wallpaper", e)
+        false
       }
     }
+
+private fun tryDownloadToFile(url: String, dest: File): Boolean {
+  if (url.isBlank()) return false
+  return try {
+    val conn =
+        URL(url).openConnection().apply {
+          connectTimeout = 10_000
+          readTimeout = 10_000
+        }
+    conn.getInputStream().use { input ->
+      FileOutputStream(dest).use { output -> input.copyTo(output) }
+    }
+    dest.exists() && dest.length() > 0
+  } catch (_: Exception) {
+    if (dest.exists()) dest.delete()
+    false
+  }
+}
+

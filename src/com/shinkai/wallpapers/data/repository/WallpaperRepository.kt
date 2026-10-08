@@ -11,7 +11,7 @@ import org.json.JSONArray
 object WallpaperRepository {
 
   private const val JSON_URL =
-      "https://raw.githubusercontent.com/ShinkaiProject/shinkai-walls-assets/heptakaideka/wallpapers.json"
+      "https://raw.githubusercontent.com/pavelc4/shinkai-walls-assets/heptakaideka/wallpapers.json"
 
   private val mutex = Mutex()
 
@@ -21,19 +21,39 @@ object WallpaperRepository {
     if (!forceRefresh && cache.isNotEmpty()) {
       return@withLock cache
     }
-    val wallpapers = withContext(Dispatchers.IO) { fetch() }
-    cache = wallpapers
-    wallpapers
+    try {
+      val wallpapers = withContext(Dispatchers.IO) { fetch() }
+      if (wallpapers.isNotEmpty()) {
+        cache = wallpapers
+      }
+      wallpapers
+    } catch (e: Exception) {
+      if (cache.isNotEmpty()) {
+        cache
+      } else {
+        throw e
+      }
+    }
   }
 
   private fun fetch(): List<Wallpaper> {
-    val array = JSONArray(NativeLib.fetchWallpapers(JSON_URL))
+    val rawJson = NativeLib.fetchWallpapers(JSON_URL)
+    val array = JSONArray(rawJson)
     return (0 until array.length()).map { index ->
       val item = array.getJSONObject(index)
+      val name = item.getString("name")
+      val thumbnailUrl = item.getString("thumbnail_url")
+      var fullUrl = item.getString("full_url")
+
+      // Fix known case-sensitivity bug in remote asset repository (e.g. Violet_halo -> violet_halo)
+      if (fullUrl.contains("Violet_halo_shinkai.png")) {
+        fullUrl = fullUrl.replace("Violet_halo_shinkai.png", "violet_halo_shinkai.png")
+      }
+
       Wallpaper(
-          name = item.getString("name"),
-          assetPath = item.getString("thumbnail_url"),
-          fullUrl = item.getString("full_url"),
+          name = name,
+          assetPath = thumbnailUrl,
+          fullUrl = fullUrl,
           category = if (item.has("category")) item.optString("category").nullIfBlank() else null,
       )
     }

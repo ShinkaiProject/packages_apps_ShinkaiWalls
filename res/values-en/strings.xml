@@ -72,8 +72,18 @@
     <!-- Preview -->
     <string name="preview_apply">Apply</string>
     <string name="preview_apply_question">Apply wallpaper?</string>
+    <string name="preview_apply_subtitle">Choose where to apply</string>
+    <string name="preview_both_screens">Home &amp; Lock Screen</string>
+    <string name="preview_both_screens_sub">Both Screens</string>
+    <string name="preview_both_screens_desc">Apply wallpaper across both home and lock screens.</string>
     <string name="preview_lock_screen">Lock Screen</string>
+    <string name="preview_lock_screen_sub">Lock Screen Only</string>
+    <string name="preview_lock_screen_desc">Applies only to lock screen, leaving home screen untouched.</string>
     <string name="preview_home_screen">Home Screen</string>
+    <string name="preview_home_screen_sub">Home Screen Only</string>
+    <string name="preview_home_screen_desc">Applies wallpaper exclusively to your home screen launcher.</string>
+    <string name="preview_badge_recommended">RECOMMENDED</string>
+    <string name="preview_top_bar_subtitle">Wallpaper &amp; Style</string>
     <string name="preview_wallpaper_set">Wallpaper successfully installed.</string>
     <string name="preview_wallpaper_failed">Failed: %s</string>
 </resources>

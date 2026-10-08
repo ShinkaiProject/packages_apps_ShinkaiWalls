@@ -81,18 +81,7 @@ fun FloatingNavBar(
                   label = "pill_color",
               )
 
-          val horizontalPadding by
-              animateDpAsState(
-                  targetValue = if (selected) 20.dp else 16.dp,
-                  animationSpec =
-                      spring(
-                          dampingRatio = Spring.DampingRatioMediumBouncy,
-                          stiffness = Spring.StiffnessMediumLow,
-                      ),
-                  label = "pill_padding",
-              )
-
-          val iconScale by
+          val iconScale =
               animateFloatAsState(
                   targetValue = if (selected) 1.15f else 1.0f,
                   animationSpec =
@@ -109,7 +98,7 @@ fun FloatingNavBar(
                       .background(bg)
                       .clickable { onSelect(destination) }
                       .padding(
-                          horizontal = horizontalPadding,
+                          horizontal = if (selected) 18.dp else 16.dp,
                           vertical = 14.dp,
                       ),
               verticalAlignment = Alignment.CenterVertically,
@@ -121,8 +110,9 @@ fun FloatingNavBar(
                 tint = contentColor,
                 modifier =
                     Modifier.size(24.dp).graphicsLayer {
-                      scaleX = iconScale
-                      scaleY = iconScale
+                      val s = iconScale.value
+                      scaleX = s
+                      scaleY = s
                     },
             )
             AnimatedVisibility(

@@ -39,6 +39,7 @@ fun ContributorCard(
     modifier: Modifier = Modifier,
 ) {
     Card(
+        onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(32.dp),
         colors =
@@ -50,7 +51,6 @@ fun ContributorCard(
         Row(
             modifier =
                 Modifier.fillMaxWidth()
-                    .clickable(onClick = onClick)
                     .padding(start = 12.dp, end = 16.dp, top = 10.dp, bottom = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(14.dp),
@@ -68,6 +68,7 @@ fun ContributorCard(
                         contentDescription = contributor.login,
                         modifier = Modifier.fillMaxSize().clip(CircleShape),
                         contentScale = ContentScale.Crop,
+                        targetMaxDim = 256,
                         indicatorSize = 20.dp,
                     )
                 } else {

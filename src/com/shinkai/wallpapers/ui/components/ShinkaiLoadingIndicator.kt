@@ -72,9 +72,9 @@ fun ShinkaiLoadingIndicator(
 
     val shapeMorphProgress by infiniteTransition.animateFloat(
         initialValue = 0f,
-        targetValue = 4f,
+        targetValue = 6f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 4000, easing = LinearEasing),
+            animation = tween(durationMillis = 5400, easing = LinearEasing),
             repeatMode = RepeatMode.Restart,
         ),
         label = "shape_morph",
@@ -100,7 +100,7 @@ fun ShinkaiLoadingIndicator(
             ),
         contentAlignment = Alignment.Center,
     ) {
-        val innerSize = if (isContained) size * 0.65f else size
+        val innerSize = if (isContained) size * 0.58f else size * 0.75f
         Box(
             modifier = Modifier
                 .size(innerSize)
@@ -223,8 +223,8 @@ fun ShinkaiCircularWavyProgressIndicator(
     modifier: Modifier = Modifier,
     size: Dp = 44.dp,
     strokeWidth: Dp = if (size <= 32.dp) 3.dp else 4.dp,
-    amplitude: Dp = if (size <= 32.dp) 1.8.dp else 2.6.dp,
-    waveCount: Int = if (size <= 32.dp) 8 else 12,
+    amplitude: Dp = if (size <= 32.dp) 1.6.dp else 2.2.dp,
+    waveCount: Int = if (size <= 32.dp) 4 else 5,
     color: Color = MaterialTheme.colorScheme.primary,
     trackColor: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.22f),
 ) {

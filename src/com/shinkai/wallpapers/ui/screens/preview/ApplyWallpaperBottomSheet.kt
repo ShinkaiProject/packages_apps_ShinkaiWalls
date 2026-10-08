@@ -37,7 +37,7 @@ fun ApplyWallpaperBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         dragHandle = { AuriyaDragHandle() },
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
         modifier = modifier,
@@ -50,7 +50,7 @@ fun ApplyWallpaperBottomSheet(
             item {
                 BottomSheetHeader(
                     title = stringResource(R.string.preview_apply_question),
-                    subtitle = "Select destination display",
+                    subtitle = stringResource(R.string.preview_apply_subtitle),
                 )
             }
 
@@ -58,13 +58,12 @@ fun ApplyWallpaperBottomSheet(
             item {
                 val flag = WallpaperManager.FLAG_LOCK or WallpaperManager.FLAG_SYSTEM
                 RichSelectionCard(
-                    title = "Home & Lock Screen",
-                    subtitle = "Complete System Synchronization",
-                    description =
-                        "Seamlessly synchronizes and sets this wallpaper across both lock and home screens.",
+                    title = stringResource(R.string.preview_both_screens),
+                    subtitle = stringResource(R.string.preview_both_screens_sub),
+                    description = stringResource(R.string.preview_both_screens_desc),
                     icon = Icons.Rounded.CheckCircle,
                     selected = selectedTargetFlag == flag,
-                    badgeText = "RECOMMENDED",
+                    badgeText = stringResource(R.string.preview_badge_recommended),
                     onClick = { onSelectTarget(flag) },
                 )
             }
@@ -74,12 +73,10 @@ fun ApplyWallpaperBottomSheet(
                 val flag = WallpaperManager.FLAG_LOCK
                 RichSelectionCard(
                     title = stringResource(R.string.preview_lock_screen),
-                    subtitle = "Lock & Ambient Display",
-                    description =
-                        "Applies only to your lock screen, leaving your home screen launcher untouched.",
+                    subtitle = stringResource(R.string.preview_lock_screen_sub),
+                    description = stringResource(R.string.preview_lock_screen_desc),
                     icon = Icons.Rounded.Lock,
                     selected = selectedTargetFlag == flag,
-                    badgeText = "ACTIVE",
                     onClick = { onSelectTarget(flag) },
                 )
             }
@@ -89,12 +86,10 @@ fun ApplyWallpaperBottomSheet(
                 val flag = WallpaperManager.FLAG_SYSTEM
                 RichSelectionCard(
                     title = stringResource(R.string.preview_home_screen),
-                    subtitle = "Launcher & Application Grid",
-                    description =
-                        "Displays wallpaper exclusively on your desktop launcher behind apps and widgets.",
+                    subtitle = stringResource(R.string.preview_home_screen_sub),
+                    description = stringResource(R.string.preview_home_screen_desc),
                     icon = Icons.Rounded.Home,
                     selected = selectedTargetFlag == flag,
-                    badgeText = "ACTIVE",
                     onClick = { onSelectTarget(flag) },
                 )
             }

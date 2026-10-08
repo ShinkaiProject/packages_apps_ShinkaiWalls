@@ -9,8 +9,15 @@ data class WallCategoryDefinition(
     val folder: String,
 ) {
   fun matches(wallpaper: Wallpaper): Boolean {
-    val folder = wallpaper.folder ?: return false
-    return folder.equals(this.folder, ignoreCase = true)
+    val cat = wallpaper.category ?: wallpaper.folder ?: return false
+    if (cat.equals(folder, ignoreCase = true) || cat.equals(id, ignoreCase = true)) {
+      return true
+    }
+    val strippedCat = cat.filter { it.isLetterOrDigit() }
+    val strippedFolder = folder.filter { it.isLetterOrDigit() }
+    val strippedId = id.filter { it.isLetterOrDigit() }
+    return strippedCat.equals(strippedFolder, ignoreCase = true) ||
+           strippedCat.equals(strippedId, ignoreCase = true)
   }
 }
 

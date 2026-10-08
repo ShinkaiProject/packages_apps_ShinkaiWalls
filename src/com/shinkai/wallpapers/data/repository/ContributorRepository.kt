@@ -11,6 +11,22 @@ object ContributorRepository {
     private const val GITHUB_API_URL =
         "https://api.github.com/repos/ShinkaiProject/packages_apps_ShinkaiWalls/contributors"
 
+    private val FallbackContributors =
+        listOf(
+            GitHubContributor(
+                login = "Pavelc4",
+                avatarUrl = "https://avatars.githubusercontent.com/u/101870119?v=4",
+                htmlUrl = "https://github.com/Pavelc4",
+                contributions = 16,
+            ),
+            GitHubContributor(
+                login = "ShinkaiProject",
+                avatarUrl = "https://avatars.githubusercontent.com/u/144186595?v=4",
+                htmlUrl = "https://github.com/ShinkaiProject",
+                contributions = 18,
+            ),
+        )
+
     suspend fun getContributors(): List<GitHubContributor> = withContext(Dispatchers.IO) {
         try {
             val url = URL(GITHUB_API_URL)
@@ -27,21 +43,23 @@ object ContributorRepository {
                 val list = mutableListOf<GitHubContributor>()
                 for (i in 0 until jsonArray.length()) {
                     val obj = jsonArray.getJSONObject(i)
+                    val login = obj.optString("login", "")
+                    val htmlUrl = obj.optString("html_url", "").ifBlank { "https://github.com/$login" }
                     list.add(
                         GitHubContributor(
-                            login = obj.optString("login", ""),
+                            login = login,
                             avatarUrl = obj.optString("avatar_url", ""),
-                            htmlUrl = obj.optString("html_url", ""),
+                            htmlUrl = htmlUrl,
                             contributions = obj.optInt("contributions", 0),
                         )
                     )
                 }
-                list
+                if (list.isNotEmpty()) list else FallbackContributors
             } else {
-                emptyList()
+                FallbackContributors
             }
         } catch (_: Exception) {
-            emptyList()
+            FallbackContributors
         }
     }
 }

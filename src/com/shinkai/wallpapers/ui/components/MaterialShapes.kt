@@ -25,10 +25,33 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-/** 10-lobed smooth scallop shape matching Material 3 Expressive Loading standards. */
-class Scallop10Shape(
-    private val lobes: Int = 10,
-    private val depth: Float = 0.13f,
+/** Profile representing a smooth, organic Material 3 Expressive shape. */
+data class ExpressiveShapeProfile(
+    val lobes: Int,
+    val rBase: Float,
+    val rDelta: Float,
+    val power: Float = 1.5f,
+    val angleOffset: Float = 0f,
+)
+
+private val M3_EXPRESSIVE_PROFILES = listOf(
+    // 1. 4-lobed Puffy Clover (Signature M3 Expressive shape matching Google standard)
+    ExpressiveShapeProfile(lobes = 4, rBase = 0.65f, rDelta = 0.35f, power = 1.4f),
+    // 2. 6-lobed Blossom (Organic soft 6-petal bloom)
+    ExpressiveShapeProfile(lobes = 6, rBase = 0.74f, rDelta = 0.26f, power = 1.5f),
+    // 3. 8-lobed Flower (Soft rounded daisy bloom)
+    ExpressiveShapeProfile(lobes = 8, rBase = 0.80f, rDelta = 0.20f, power = 1.5f),
+    // 4. Soft 4-pointed Sparkle (Rotated organic sparkle)
+    ExpressiveShapeProfile(lobes = 4, rBase = 0.58f, rDelta = 0.42f, power = 2.0f, angleOffset = (PI / 4f).toFloat()),
+    // 5. 5-lobed Starbloom (Playful 5-leaf blossom)
+    ExpressiveShapeProfile(lobes = 5, rBase = 0.70f, rDelta = 0.30f, power = 1.5f),
+    // 6. Soft Squircle (Transitional puffy cushion)
+    ExpressiveShapeProfile(lobes = 4, rBase = 0.86f, rDelta = 0.14f, power = 1.0f),
+)
+
+/** 4-lobed smooth puffy clover shape matching Material 3 Expressive standards. */
+class ExpressivePuffyShape(
+    private val profile: ExpressiveShapeProfile = M3_EXPRESSIVE_PROFILES[0],
 ) : Shape {
   override fun createOutline(
       size: Size,
@@ -39,11 +62,13 @@ class Scallop10Shape(
     val cx = size.width / 2f
     val cy = size.height / 2f
     val radius = minOf(cx, cy)
-    val steps = 120
+    val steps = 144
 
     for (i in 0 until steps) {
       val theta = (i.toFloat() / steps) * (2f * PI.toFloat())
-      val r = radius * (1f - depth + depth * cos(lobes * theta))
+      val normCos = (cos(profile.lobes * (theta - profile.angleOffset)) + 1f) / 2f
+      val p = Math.pow(normCos.toDouble(), profile.power.toDouble()).toFloat()
+      val r = radius * (profile.rBase + profile.rDelta * p)
       val x = cx + r * cos(theta)
       val y = cy + r * sin(theta)
 
@@ -58,12 +83,12 @@ class Scallop10Shape(
   }
 }
 
-val ExpressiveScallopShape: Shape = Scallop10Shape()
+val ExpressiveScallopShape: Shape = ExpressivePuffyShape()
 
 /**
  * Material 3 Expressive morphing shape that continuously and smoothly interpolates
  * between signature M3 shapes: 4-lobed Clover, 6-lobed Blossom, 8-lobed Flower,
- * and 10-lobed Scallop.
+ * 4-pointed Sparkle, 5-lobed Starbloom, and Soft Squircle.
  */
 class MorphingScallopShape(
     private val progress: Float,
@@ -80,31 +105,27 @@ class MorphingScallopShape(
     val radius = minOf(cx, cy)
     val steps = 144
 
-    val lobeConfigs = listOf(
-        4 to 0.16f,
-        6 to 0.14f,
-        8 to 0.13f,
-        10 to 0.12f,
-    )
-
-    val count = lobeConfigs.size
+    val count = M3_EXPRESSIVE_PROFILES.size
     val normalized = (progress % count + count) % count
     val idxA = normalized.toInt()
     val idxB = (idxA + 1) % count
     val t = normalized - idxA
 
-    val (lobesA, depthA) = lobeConfigs[idxA]
-    val (lobesB, depthB) = lobeConfigs[idxB]
-
-    val effDepthA = depthA * depthFactor
-    val effDepthB = depthB * depthFactor
+    val profA = M3_EXPRESSIVE_PROFILES[idxA]
+    val profB = M3_EXPRESSIVE_PROFILES[idxB]
 
     for (i in 0 until steps) {
       val theta = (i.toFloat() / steps) * (2f * PI.toFloat())
-      val rA = radius * (1f - effDepthA + effDepthA * cos(lobesA * theta))
-      val rB = radius * (1f - effDepthB + effDepthB * cos(lobesB * theta))
-      val r = (1f - t) * rA + t * rB
 
+      val normCosA = (cos(profA.lobes * (theta - profA.angleOffset)) + 1f) / 2f
+      val pA = Math.pow(normCosA.toDouble(), profA.power.toDouble()).toFloat()
+      val rA = radius * (profA.rBase + profA.rDelta * pA * depthFactor)
+
+      val normCosB = (cos(profB.lobes * (theta - profB.angleOffset)) + 1f) / 2f
+      val pB = Math.pow(normCosB.toDouble(), profB.power.toDouble()).toFloat()
+      val rB = radius * (profB.rBase + profB.rDelta * pB * depthFactor)
+
+      val r = (1f - t) * rA + t * rB
       val x = cx + r * cos(theta)
       val y = cy + r * sin(theta)
 

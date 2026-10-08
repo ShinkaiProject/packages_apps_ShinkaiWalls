@@ -139,6 +139,7 @@ fun WallsScreenContent(
                             itemsIndexed(
                                 items = uiState.categories,
                                 key = { _, category -> category.id },
+                                contentType = { _, _ -> "category_card" },
                             ) { index, category ->
                                 val ratio = CategoryMasonryAspectRatios[index % CategoryMasonryAspectRatios.size]
                                 WallCategoryCard(

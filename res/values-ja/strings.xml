@@ -71,8 +71,18 @@
     <!-- Preview -->
     <string name="preview_apply">適用</string>
     <string name="preview_apply_question">壁紙を適用しますか？</string>
+    <string name="preview_apply_subtitle">適用先を選択</string>
+    <string name="preview_both_screens">ホーム画面とロック画面</string>
+    <string name="preview_both_screens_sub">両方の画面</string>
+    <string name="preview_both_screens_desc">ホーム画面とロック画面の両方に壁紙を適用します。</string>
     <string name="preview_lock_screen">ロック画面</string>
+    <string name="preview_lock_screen_sub">ロック画面のみ</string>
+    <string name="preview_lock_screen_desc">ホーム画面を変更せず、ロック画面のみに適用します。</string>
     <string name="preview_home_screen">ホーム画面</string>
+    <string name="preview_home_screen_sub">ホーム画面のみ</string>
+    <string name="preview_home_screen_desc">ロック画面を変更せず、ホーム画面のみに適用します。</string>
+    <string name="preview_badge_recommended">おすすめ</string>
+    <string name="preview_top_bar_subtitle">壁紙とスタイル</string>
     <string name="preview_wallpaper_set">壁紙を設定しました。</string>
     <string name="preview_wallpaper_failed">失敗: %s</string>
 </resources>
