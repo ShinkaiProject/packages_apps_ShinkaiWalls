@@ -10,8 +10,7 @@ import org.json.JSONArray
 
 object WallpaperRepository {
 
-  private const val JSON_URL =
-      "https://raw.githubusercontent.com/pavelc4/shinkai-walls-assets/heptakaideka/wallpapers.json"
+  private const val JSON_URL =  "https://raw.githubusercontent.com/ShinkaiProject/shinkai-walls-assets/heptakaideka/wallpapers.json"
 
   private val mutex = Mutex()
 
